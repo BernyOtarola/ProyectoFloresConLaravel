@@ -16,7 +16,7 @@ class SuscriptorController extends Controller
         return view('admin.suscriptores.index', compact('suscriptores'));
     }
 
-    public function destroy(Suscriptor $suscriptor)
+    public function eliminar(Suscriptor $suscriptor)
     {
         $suscriptor->delete();
 

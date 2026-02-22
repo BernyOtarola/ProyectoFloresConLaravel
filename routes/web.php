@@ -42,6 +42,7 @@ Route::get('/logout-admin', [AuthController::class, 'logoutAdmin'])->name('logou
 
 Route::post('/api/carrito', [CarritoController::class, 'api'])->name('api.carrito');
 Route::post('/api/checkout', [CheckoutController::class, 'store'])->name('api.checkout');
+Route::post('/api/suscribir', [HomeController::class, 'suscribir'])->name('api.suscribir');
 
 // ==========================================
 // RUTAS ADMIN (protegidas con middleware)
@@ -55,25 +56,25 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/productos',                [ProductoController::class, 'index'])->name('admin.productos.index');
     Route::get('/productos/crear',          [ProductoController::class, 'crear'])->name('admin.productos.crear');
     Route::post('/productos/guardar',       [ProductoController::class, 'guardar'])->name('admin.productos.guardar');
-    Route::get('/productos/{id}/editar',    [ProductoController::class, 'editar'])->name('admin.productos.editar');
-    Route::put('/productos/{id}/actualizar',[ProductoController::class, 'actualizar'])->name('admin.productos.actualizar');
-    Route::get('/productos/{id}/toggle',    [ProductoController::class, 'toggle'])->name('admin.productos.toggle');
-    Route::delete('/productos/{id}/eliminar',[ProductoController::class, 'eliminar'])->name('admin.productos.eliminar');
+    Route::get('/productos/{producto}/editar',    [ProductoController::class, 'editar'])->name('admin.productos.editar');
+    Route::put('/productos/{producto}/actualizar',[ProductoController::class, 'actualizar'])->name('admin.productos.actualizar');
+    Route::get('/productos/{producto}/toggle',    [ProductoController::class, 'toggle'])->name('admin.productos.toggle');
+    Route::delete('/productos/{producto}/eliminar',[ProductoController::class, 'eliminar'])->name('admin.productos.eliminar');
 
     // Pedidos
     Route::get('/pedidos',              [PedidoController::class, 'index'])->name('admin.pedidos.index');
-    Route::get('/pedidos/{id}',         [PedidoController::class, 'detalle'])->name('admin.pedidos.detalle');
-    Route::patch('/pedidos/{id}/estado', [PedidoController::class, 'cambiarEstado'])->name('admin.pedidos.estado');
+    Route::get('/pedidos/{pedido}',         [PedidoController::class, 'detalle'])->name('admin.pedidos.detalle');
+    Route::patch('/pedidos/{pedido}/estado', [PedidoController::class, 'cambiarEstado'])->name('admin.pedidos.estado');
 
     // Categorías
     Route::get('/categorias',              [CategoriaController::class, 'index'])->name('admin.categorias.index');
     Route::post('/categorias/guardar',     [CategoriaController::class, 'guardar'])->name('admin.categorias.guardar');
-    Route::delete('/categorias/{id}/eliminar',[CategoriaController::class, 'eliminar'])->name('admin.categorias.eliminar');
+    Route::delete('/categorias/{categoria}/eliminar',[CategoriaController::class, 'eliminar'])->name('admin.categorias.eliminar');
 
     // Suscriptores
     Route::get('/suscriptores',              [SuscriptorController::class, 'index'])->name('admin.suscriptores.index');
     Route::get('/suscriptores/exportar',     [SuscriptorController::class, 'exportar'])->name('admin.suscriptores.exportar');
-    Route::delete('/suscriptores/{id}/eliminar',[SuscriptorController::class, 'eliminar'])->name('admin.suscriptores.eliminar');
+    Route::delete('/suscriptores/{suscriptor}/eliminar',[SuscriptorController::class, 'eliminar'])->name('admin.suscriptores.eliminar');
 
     // Newsletter
     Route::get('/newsletter',         [NewsletterController::class, 'index'])->name('admin.newsletter.index');

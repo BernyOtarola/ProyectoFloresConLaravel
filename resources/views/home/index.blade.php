@@ -212,9 +212,20 @@ function suscribir(){
     const nombre=document.getElementById('nlNombre').value;
     const email=document.getElementById('nlEmail').value;
     if(!nombre||!email){ showToast('Completa nombre y correo'); return; }
-    const msg=document.getElementById('nlMsg');
-    msg.style.display='block'; msg.textContent='¡Gracias '+nombre+'! Te mantendremos al tanto 🌺';
-    document.getElementById('nlForm').style.display='none';
+    fetch('{{ route("api.suscribir") }}', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
+        body:JSON.stringify({nombre, email})
+    }).then(r=>{
+        if(!r.ok) throw new Error();
+        return r.json();
+    }).then(d=>{
+        if(d.success){
+            const msg=document.getElementById('nlMsg');
+            msg.style.display='block'; msg.textContent='¡Gracias '+nombre+'! Te mantendremos al tanto 🌺';
+            document.getElementById('nlForm').style.display='none';
+        }
+    }).catch(()=>showToast('Error al suscribirse, intenta de nuevo.'));
 }
 </script>
 @endpush

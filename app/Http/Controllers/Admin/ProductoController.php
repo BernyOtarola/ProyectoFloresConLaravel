@@ -14,13 +14,13 @@ class ProductoController extends Controller
     {
         $productos = Producto::with('categoria')
             ->orderByDesc('destacado')
-            ->latest()
+            ->latest('creado_en')
             ->get();
 
         return view('admin.productos.index', compact('productos'));
     }
 
-    public function create()
+    public function crear()
     {
         $categorias = Categoria::orderBy('nombre')->get();
 
@@ -30,7 +30,7 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function guardar(Request $request)
     {
         $data = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, null);
@@ -41,14 +41,14 @@ class ProductoController extends Controller
             ->with('success', 'Producto creado exitosamente.');
     }
 
-    public function edit(Producto $producto)
+    public function editar(Producto $producto)
     {
         $categorias = Categoria::orderBy('nombre')->get();
 
         return view('admin.productos.form', compact('producto', 'categorias'));
     }
 
-    public function update(Request $request, Producto $producto)
+    public function actualizar(Request $request, Producto $producto)
     {
         $data = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, $producto->imagen);
@@ -66,7 +66,7 @@ class ProductoController extends Controller
         return redirect()->route('admin.productos.index');
     }
 
-    public function destroy(Producto $producto)
+    public function eliminar(Producto $producto)
     {
         // Borrar imagen si existe
         if ($producto->imagen) {

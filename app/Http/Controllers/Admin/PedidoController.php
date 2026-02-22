@@ -10,19 +10,19 @@ class PedidoController extends Controller
 {
     public function index()
     {
-        $pedidos = Pedido::latest()->get();
+        $pedidos = Pedido::latest('creado_en')->get();
 
         return view('admin.pedidos.index', compact('pedidos'));
     }
 
-    public function show(Pedido $pedido)
+    public function detalle(Pedido $pedido)
     {
         $items = json_decode($pedido->items_json, true) ?? [];
 
         return view('admin.pedidos.detalle', compact('pedido', 'items'));
     }
 
-    public function updateEstado(Request $request, Pedido $pedido)
+    public function cambiarEstado(Request $request, Pedido $pedido)
     {
         $request->validate([
             'estado' => 'required|in:pendiente,confirmado,en_proceso,listo,entregado,cancelado',
@@ -30,7 +30,7 @@ class PedidoController extends Controller
 
         $pedido->update(['estado' => $request->input('estado')]);
 
-        return redirect()->route('admin.pedidos.show', $pedido)
+        return redirect()->route('admin.pedidos.detalle', $pedido)
             ->with('success', 'Estado actualizado.');
     }
 }

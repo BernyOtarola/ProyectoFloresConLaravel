@@ -16,10 +16,10 @@ class DashboardController extends Controller
             'pedidosPendientes' => Pedido::where('estado', 'pendiente')->count(),
             'totalProductos'    => Producto::where('activo', true)->count(),
             'totalSuscriptores' => Suscriptor::where('activo', true)->count(),
-            'ventasHoy'         => Pedido::whereDate('created_at', today())->sum('total'),
+            'ventasHoy'         => Pedido::whereDate('creado_en', today())->sum('total'),
         ];
 
-        $ultimosPedidos = Pedido::latest()->take(8)->get();
+        $ultimosPedidos = Pedido::latest('creado_en')->take(8)->get();
 
         return view('admin.dashboard', compact('stats', 'ultimosPedidos'));
     }
