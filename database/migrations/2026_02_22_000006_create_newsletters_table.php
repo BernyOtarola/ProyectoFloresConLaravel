@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('newsletters', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('asunto', 255);
+            $table->text('mensaje');
+            $table->integer('enviado_a')->default(0);
+            $table->timestamp('enviado_en')->useCurrent();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('newsletters');
+    }
+};
