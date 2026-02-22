@@ -30,6 +30,7 @@ class Producto extends Model
 
     // La tabla usa creado_en en vez de created_at / updated_at
     public $timestamps = false;
+    const CREATED_AT = 'creado_en';
 
     // ── Relaciones ───────────────────────────────────────────
 

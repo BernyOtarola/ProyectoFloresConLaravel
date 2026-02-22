@@ -17,7 +17,7 @@ class CategoriaController extends Controller
         return view('admin.categorias.index', compact('categorias'));
     }
 
-    public function store(Request $request)
+    public function guardar(Request $request)
     {
         $request->validate([
             'nombre'      => 'required|string|max:100',
@@ -49,7 +49,7 @@ class CategoriaController extends Controller
             ->with('success', 'Categoría actualizada.');
     }
 
-    public function destroy(Categoria $categoria)
+    public function eliminar(Categoria $categoria)
     {
         $categoria->delete();
 
