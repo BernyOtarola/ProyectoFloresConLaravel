@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewsletterMail;
 use App\Models\Newsletter;
 use App\Models\Suscriptor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class NewsletterController extends Controller
 {
@@ -20,30 +22,43 @@ class NewsletterController extends Controller
     public function enviar(Request $request)
     {
         $request->validate([
-            'asunto' => 'required|string|max:255',
+            'asunto'  => 'required|string|max:255',
             'mensaje' => 'required|string',
         ]);
 
         $suscriptores = Suscriptor::where('activo', true)->get();
-        $totalEnviados = $suscriptores->count();
+        $enviados = 0;
+        $errores  = 0;
 
-
-        foreach ($suscriptores as $s) {
-            Mail::to($s->email)->queue(new NewsletterMail(
-                $request->input('asunto'),
-                $request->input('mensaje'),
-                $s->nombre,
-            ));
+        foreach ($suscriptores as $sub) {
+            try {
+                Mail::to($sub->email)->send(
+                    new NewsletterMail(
+                        $request->input('asunto'),
+                        $request->input('mensaje'),
+                        $sub->nombre
+                    )
+                );
+                $enviados++;
+            } catch (\Exception $e) {
+                $errores++;
+            }
         }
 
+        // Guardar registro del newsletter enviado
         Newsletter::create([
-            'asunto' => $request->input('asunto'),
-            'mensaje' => $request->input('mensaje'),
-            'enviado_a' => $totalEnviados,
+            'asunto'     => $request->input('asunto'),
+            'mensaje'    => $request->input('mensaje'),
+            'enviado_a'  => $enviados,
             'enviado_en' => now(),
         ]);
 
+        $msg = "✅ Newsletter enviado a {$enviados} suscriptores.";
+        if ($errores > 0) {
+            $msg .= " ⚠️ {$errores} no pudieron ser enviados.";
+        }
+
         return redirect()->route('admin.newsletter.index')
-            ->with('success', "Newsletter guardado para {$totalEnviados} suscriptores.");
+            ->with('success', $msg);
     }
 }

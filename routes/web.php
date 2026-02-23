@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\NewsletterController;
 // ══════════════════════════════════════════════════════════
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/catalogo/pdf', [CatalogoController::class, 'pdf'])->name('catalogo.pdf');
 Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
 Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito');
 
@@ -40,8 +41,10 @@ Route::get('/logout-admin', [AuthController::class, 'logoutAdmin'])->name('logou
 // APIs JSON (AJAX desde el frontend)
 // ══════════════════════════════════════════════════════════
 
+// En la sección "APIs JSON (AJAX desde el frontend)"
 Route::post('/api/carrito', [CarritoController::class, 'api'])->name('api.carrito');
 Route::post('/api/checkout', [CheckoutController::class, 'store'])->name('api.checkout');
+Route::post('/api/suscribir', [HomeController::class, 'suscribir'])->name('api.suscribir');  
 
 // ==========================================
 // RUTAS ADMIN (protegidas con middleware)

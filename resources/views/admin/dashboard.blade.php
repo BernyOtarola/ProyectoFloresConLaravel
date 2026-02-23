@@ -1,6 +1,14 @@
 @extends('layouts.admin')
 @section('page-title', 'Dashboard')
 
+@push('css')
+<style>
+    @media(max-width:640px){
+        .section-title { font-size:1.2rem; }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="stat-grid">
     <div class="stat-card"><div class="icon">📦</div><div class="num">{{ $stats['totalPedidos'] }}</div><div class="label">Total pedidos</div></div>

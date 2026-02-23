@@ -4,6 +4,13 @@
     <a href="{{ route('admin.pedidos.index') }}" class="btn btn-outline">← Volver</a>
 @endsection
 
+@push('css')
+<style>
+    .pedido-grid { display:grid;grid-template-columns:1fr 340px;gap:2rem; }
+    @media(max-width:900px){ .pedido-grid{grid-template-columns:1fr;} }
+</style>
+@endpush
+
 @section('content')
 @php
     $badges = ['pendiente'=>'badge-yellow','confirmado'=>'badge-blue','en_proceso'=>'badge-blue','listo'=>'badge-green','entregado'=>'badge-green','cancelado'=>'badge-red'];
@@ -11,12 +18,12 @@
     $st = $pedido->estado;
 @endphp
 
-<div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;">
+<div class="pedido-grid">
     <div>
         <div class="form-card" style="max-width:100%;">
             <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--verde);margin-bottom:1.5rem;">📦 Detalle del pedido</h3>
             <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;width:140px;">N° Pedido</td><td><strong>{{ $pedido->numero_pedido }}</strong></td></tr>
+                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;width:120px;">N° Pedido</td><td><strong>{{ $pedido->numero_pedido }}</strong></td></tr>
                 <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Estado</td><td><span class="badge {{ $badges[$st] ?? 'badge-gray' }}">{{ $labels[$st] ?? $st }}</span></td></tr>
                 <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Fecha</td><td>{{ \Carbon\Carbon::parse($pedido->creado_en)->format('d/m/Y H:i') }}</td></tr>
             </table>
@@ -25,11 +32,11 @@
 
             <h4 style="color:var(--verde);margin-bottom:1rem;">👤 Datos del cliente</h4>
             <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;width:140px;">Nombre</td><td>{{ $pedido->nombre_cliente }}</td></tr>
+                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;width:120px;">Nombre</td><td>{{ $pedido->nombre_cliente }}</td></tr>
                 <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Teléfono</td>
                     <td><a href="https://wa.me/506{{ $pedido->telefono_cliente }}" target="_blank" style="color:var(--verde);">📱 {{ $pedido->telefono_cliente }}</a></td></tr>
                 @if($pedido->email_cliente)
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Email</td><td>{{ $pedido->email_cliente }}</td></tr>
+                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Email</td><td style="word-break:break-all;">{{ $pedido->email_cliente }}</td></tr>
                 @endif
                 <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Entrega</td><td>{{ $pedido->tipo_entrega === 'envio' ? '🚗 Domicilio' : '🏪 Retiro en local' }}</td></tr>
                 @if($pedido->direccion_envio)

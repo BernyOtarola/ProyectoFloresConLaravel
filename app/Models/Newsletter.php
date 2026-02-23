@@ -17,16 +17,8 @@ class Newsletter extends Model
 
     protected $casts = [
         'enviado_en' => 'datetime',
-        'enviado_a'  => 'integer',
     ];
 
     const CREATED_AT = 'enviado_en';
     const UPDATED_AT = null;
-
-    // ── Accessors ────────────────────────────────────────────
-
-    public function getFechaFormateadaAttribute(): string
-    {
-        return $this->enviado_en?->format('d/m/Y H:i') ?? '—';
-    }
 }

@@ -42,7 +42,6 @@ class CheckoutController extends Controller
             'estado'           => 'pendiente',
         ]);
 
-        // Vaciar carrito en sesión
         session()->forget('carrito');
 
         return response()->json([

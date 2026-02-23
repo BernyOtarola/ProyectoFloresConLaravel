@@ -14,13 +14,13 @@ class ProductoController extends Controller
     {
         $productos = Producto::with('categoria')
             ->orderByDesc('destacado')
-            ->latest()
+            ->latest('creado_en')
             ->get();
 
         return view('admin.productos.index', compact('productos'));
     }
 
-    public function create()
+    public function crear()                          // ← era create()
     {
         $categorias = Categoria::orderBy('nombre')->get();
 
@@ -30,7 +30,7 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function guardar(Request $request)        // ← era store()
     {
         $data = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, null);
@@ -41,15 +41,17 @@ class ProductoController extends Controller
             ->with('success', 'Producto creado exitosamente.');
     }
 
-    public function edit(Producto $producto)
+    public function editar($id)                      // ← era edit(Producto $producto)
     {
+        $producto = Producto::findOrFail($id);
         $categorias = Categoria::orderBy('nombre')->get();
 
         return view('admin.productos.form', compact('producto', 'categorias'));
     }
 
-    public function update(Request $request, Producto $producto)
+    public function actualizar(Request $request, $id) // ← era update()
     {
+        $producto = Producto::findOrFail($id);
         $data = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, $producto->imagen);
 
@@ -59,16 +61,19 @@ class ProductoController extends Controller
             ->with('success', 'Producto actualizado.');
     }
 
-    public function toggle(Producto $producto)
+    public function toggle($id)
     {
+        $producto = Producto::findOrFail($id);
         $producto->update(['activo' => !$producto->activo]);
 
-        return redirect()->route('admin.productos.index');
+        return redirect()->route('admin.productos.index')
+            ->with('success', $producto->activo ? 'Producto activado.' : 'Producto desactivado.');
     }
 
-    public function destroy(Producto $producto)
+    public function eliminar($id)                    // ← era destroy()
     {
-        // Borrar imagen si existe
+        $producto = Producto::findOrFail($id);
+
         if ($producto->imagen) {
             Storage::disk('public')->delete('products/' . $producto->imagen);
         }
@@ -79,40 +84,37 @@ class ProductoController extends Controller
             ->with('success', 'Producto eliminado.');
     }
 
-    // ── Helpers privados ────────────────────────────────────
+    // ── Helpers privados ─────────────────────────────────
 
     private function validar(Request $request): array
     {
-        $request->validate([
-            'nombre'       => 'required|string|max:150',
+        $data = $request->validate([
+            'nombre'       => 'required|string|max:200',
             'descripcion'  => 'nullable|string',
             'precio'       => 'required|numeric|min:0',
             'categoria_id' => 'nullable|exists:categorias,id',
-            'stock'        => 'required|integer|min:0',
-            'imagen'       => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'stock'        => 'nullable|integer|min:0',
         ]);
 
-        return [
-            'nombre'       => trim($request->input('nombre')),
-            'descripcion'  => trim($request->input('descripcion', '')),
-            'precio'       => (float) $request->input('precio'),
-            'categoria_id' => $request->input('categoria_id') ?: null,
-            'stock'        => (int) $request->input('stock'),
-            'destacado'    => $request->boolean('destacado'),
-            'activo'       => $request->boolean('activo'),
-        ];
+        $data['destacado'] = $request->has('destacado') ? 1 : 0;
+        $data['activo']    = $request->has('activo') ? 1 : 0;
+        $data['stock']     = $data['stock'] ?? 0;
+
+        return $data;
     }
 
     private function subirImagen(Request $request, ?string $imagenActual): ?string
     {
-        if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
-            // Borrar imagen anterior
+        if ($request->hasFile('imagen')) {
             if ($imagenActual) {
                 Storage::disk('public')->delete('products/' . $imagenActual);
             }
-            // Guardar nueva imagen en storage/app/public/products/
-            $path = $request->file('imagen')->store('products', 'public');
-            return basename($path);
+
+            $file = $request->file('imagen');
+            $nombre = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('products', $nombre, 'public');
+
+            return $nombre;
         }
 
         return $imagenActual;

@@ -211,12 +211,12 @@ function enviarWA() {
         envio: tipoEntrega === 'envio' ? envCosto : 0,
         total: tipoEntrega === 'envio' ? base + envCosto : base
     };
-
     fetch('{{ route("api.checkout") }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
         body: JSON.stringify(pedido)
     }).then(r => r.json()).then(data => {
+        // Arma mensaje bonito para WhatsApp
         let msg = `🌺 *NUEVO PEDIDO - Floristería Bribri* 🌺\n📋 Pedido #${data.numero || 'N/A'}\n\n`;
         msg += `👤 *Cliente:* ${nombre}\n📱 *Teléfono:* ${tel}\n`;
         if (email) msg += `📧 *Email:* ${email}\n`;
@@ -231,15 +231,17 @@ function enviarWA() {
         msg += `✅ *TOTAL: ₡${(pedido.total).toLocaleString('es-CR')}*`;
         if (nota) msg += `\n📝 *Nota:* ${nota}`;
 
+        // Abre WhatsApp con el mensaje
         window.open(`https://wa.me/{{ config('floristeria.whatsapp') }}?text=${encodeURIComponent(msg)}`, '_blank');
 
-        // Limpiar carrito
+        // Limpia carrito en backend
         fetch('{{ route("api.carrito") }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ accion: 'limpiar' })
         });
 
+        // Redirige al home
         setTimeout(() => { window.location.href = '{{ route("home") }}' }, 500);
     });
 }

@@ -1,8 +1,15 @@
 @extends('layouts.admin')
 @section('page-title', 'Categorías')
 
+@push('css')
+<style>
+    .cat-grid { display:grid;grid-template-columns:1fr 340px;gap:2rem; }
+    @media(max-width:900px){ .cat-grid{grid-template-columns:1fr;} .cat-grid .form-card{order:-1;} }
+</style>
+@endpush
+
 @section('content')
-<div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;">
+<div class="cat-grid">
     <div class="table-wrap">
         <table>
             <thead><tr><th>Nombre</th><th>Descripción</th><th>Productos</th><th>Acciones</th></tr></thead>
@@ -12,7 +19,7 @@
                     <td><strong>{{ $c->nombre }}</strong></td>
                     <td style="color:var(--gris);font-size:0.875rem;">{{ $c->descripcion ?? '—' }}</td>
                     <td><span class="badge badge-blue">{{ $c->productos_count }} productos</span></td>
-                    <td>
+                    <td style="white-space:nowrap;">
                         <button class="btn btn-sm btn-outline" onclick="editar({{ $c->id }},'{{ addslashes($c->nombre) }}','{{ addslashes($c->descripcion ?? '') }}')">Editar</button>
                         <form method="POST" action="{{ route('admin.categorias.eliminar', $c->id) }}" style="display:inline;" onsubmit="return confirm('¿Eliminar categoría?')">
                             @csrf @method('DELETE')
@@ -40,7 +47,7 @@
                 <label>Descripción</label>
                 <textarea name="descripcion" id="catDesc" placeholder="Descripción breve…"></textarea>
             </div>
-            <div style="display:flex;gap:1rem;">
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
                 <button type="submit" class="btn btn-primary" id="submitBtn">Guardar</button>
                 <button type="button" class="btn btn-outline" onclick="resetForm()">Limpiar</button>
             </div>

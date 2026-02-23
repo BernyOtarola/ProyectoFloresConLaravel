@@ -1,8 +1,22 @@
 @extends('layouts.admin')
 @section('page-title', $producto ? 'Editar Producto' : 'Agregar Producto')
 
+@push('css')
+<style>
+    .prod-form-card { background:white;border-radius:16px;padding:2rem;border:1px solid rgba(42,74,30,0.06);max-width:720px; }
+    .prod-checks { display:flex;gap:2rem;flex-wrap:wrap; }
+    .prod-buttons { display:flex;gap:1rem;margin-top:0.5rem;flex-wrap:wrap; }
+
+    @media(max-width:640px) {
+        .prod-form-card { padding:1.25rem; }
+        .prod-checks { flex-direction:column;gap:0.75rem; }
+        .prod-buttons .btn { flex:1;justify-content:center; }
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="form-card">
+<div class="prod-form-card">
     <form method="POST"
           action="{{ $producto ? route('admin.productos.actualizar', $producto->id) : route('admin.productos.guardar') }}"
           enctype="multipart/form-data">
@@ -44,18 +58,20 @@
                     <img src="{{ asset('storage/products/' . $producto->imagen) }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin-top:8px;display:block;">
                 @endif
             </div>
-            <div class="form-group full" style="display:flex;gap:2rem;">
-                <label class="form-check">
-                    <input type="checkbox" name="destacado" value="1" {{ old('destacado', $producto->destacado ?? false) ? 'checked' : '' }}>
-                    ⭐ Producto destacado
-                </label>
-                <label class="form-check">
-                    <input type="checkbox" name="activo" value="1" {{ old('activo', $producto->activo ?? true) ? 'checked' : '' }}>
-                    ✅ Activo (visible en tienda)
-                </label>
+            <div class="form-group full">
+                <div class="prod-checks">
+                    <label class="form-check">
+                        <input type="checkbox" name="destacado" value="1" {{ old('destacado', $producto->destacado ?? false) ? 'checked' : '' }}>
+                        ⭐ Producto destacado
+                    </label>
+                    <label class="form-check">
+                        <input type="checkbox" name="activo" value="1" {{ old('activo', $producto->activo ?? true) ? 'checked' : '' }}>
+                        ✅ Activo (visible en tienda)
+                    </label>
+                </div>
             </div>
         </div>
-        <div style="display:flex;gap:1rem;margin-top:0.5rem;">
+        <div class="prod-buttons">
             <button type="submit" class="btn btn-primary">{{ $producto ? 'Guardar cambios' : 'Crear producto' }}</button>
             <a href="{{ route('admin.productos.index') }}" class="btn btn-outline">Cancelar</a>
         </div>

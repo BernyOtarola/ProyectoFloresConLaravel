@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use App\Models\Categoria;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class CatalogoController extends Controller
@@ -21,7 +22,7 @@ class CatalogoController extends Controller
                   ->orWhere('descripcion','like', "%{$busqueda}%");
             }))
             ->orderByDesc('destacado')
-            ->latest()
+            ->latest('creado_en')
             ->get();
 
         $categorias = Categoria::withCount(['productos' => fn($q) => $q->where('activo', true)])
@@ -32,5 +33,21 @@ class CatalogoController extends Controller
             : null;
 
         return view('catalogo.index', compact('productos', 'categorias', 'catId', 'busqueda', 'catActual'));
+    }
+
+    public function pdf()
+    {
+        $categorias = Categoria::with(['productos' => function ($q) {
+            $q->where('activo', true)->orderByDesc('destacado')->orderBy('nombre');
+        }])->get()->filter(fn($c) => $c->productos->count() > 0);
+
+        $totalProductos = Producto::where('activo', true)->count();
+
+        $pdf = Pdf::loadView('catalogo.pdf', compact('categorias', 'totalProductos'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'sans-serif');
+
+        return $pdf->download('Catalogo-Floristeria-Bribri-' . date('Y-m') . '.pdf');
     }
 }

@@ -17,13 +17,28 @@ class CategoriaController extends Controller
         return view('admin.categorias.index', compact('categorias'));
     }
 
-    public function store(Request $request)
+    public function guardar(Request $request)          // ← era store()
     {
         $request->validate([
             'nombre'      => 'required|string|max:100',
             'descripcion' => 'nullable|string',
         ]);
 
+        $id = $request->input('id');
+
+        if ($id) {
+            // Editar existente
+            $categoria = Categoria::findOrFail($id);
+            $categoria->update([
+                'nombre'      => trim($request->input('nombre')),
+                'descripcion' => trim($request->input('descripcion', '')),
+            ]);
+
+            return redirect()->route('admin.categorias.index')
+                ->with('success', 'Categoría actualizada.');
+        }
+
+        // Crear nueva
         Categoria::create([
             'nombre'      => trim($request->input('nombre')),
             'descripcion' => trim($request->input('descripcion', '')),
@@ -33,24 +48,9 @@ class CategoriaController extends Controller
             ->with('success', 'Categoría creada.');
     }
 
-    public function update(Request $request, Categoria $categoria)
+    public function eliminar($id)                      // ← era destroy()
     {
-        $request->validate([
-            'nombre'      => 'required|string|max:100',
-            'descripcion' => 'nullable|string',
-        ]);
-
-        $categoria->update([
-            'nombre'      => trim($request->input('nombre')),
-            'descripcion' => trim($request->input('descripcion', '')),
-        ]);
-
-        return redirect()->route('admin.categorias.index')
-            ->with('success', 'Categoría actualizada.');
-    }
-
-    public function destroy(Categoria $categoria)
-    {
+        $categoria = Categoria::findOrFail($id);
         $categoria->delete();
 
         return redirect()->route('admin.categorias.index')

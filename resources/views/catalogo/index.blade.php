@@ -8,6 +8,16 @@
 .page-header h1 em { font-style:italic;color:var(--rosa); }
 .breadcrumb { font-size:0.85rem;opacity:0.6;margin-bottom:0.75rem; }
 .breadcrumb a { color:white;text-decoration:none; }
+.header-actions { display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem; }
+
+.btn-pdf {
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.15);color:white;
+    padding:10px 22px;border-radius:100px;
+    text-decoration:none;font-size:0.85rem;font-weight:500;
+    transition:all 0.2s;border:1.5px solid rgba(255,255,255,0.3);
+}
+.btn-pdf:hover { background:rgba(255,255,255,0.25);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.15); }
 
 .cat-layout { display:grid;grid-template-columns:250px 1fr;gap:2.5rem;padding:2.5rem 5%;max-width:1400px;margin:0 auto; }
 
@@ -44,14 +54,19 @@
 .empty { text-align:center;padding:4rem;color:var(--gris); }
 .empty .icon { font-size:4rem;margin-bottom:1rem; }
 
-@media(max-width:768px){ .cat-layout{grid-template-columns:1fr} .cat-sidebar{display:none} }
+@media(max-width:768px){ .cat-layout{grid-template-columns:1fr} .cat-sidebar{display:none} .header-actions{flex-direction:column;align-items:flex-start;gap:0.75rem;} }
 </style>
 @endpush
 
 @section('content')
 <div class="page-header">
     <div class="breadcrumb"><a href="{{ route('home') }}">Inicio</a> → {{ $catActual ?: 'Catálogo' }}</div>
-    <h1>{!! $catActual ? e($catActual) : 'Nuestro <em>Catálogo</em>' !!}</h1>
+    <div class="header-actions">
+        <h1>{!! $catActual ? e($catActual) : 'Nuestro <em>Catálogo</em>' !!}</h1>
+        <a href="{{ route('catalogo.pdf') }}" class="btn-pdf">
+            📄 Descargar catálogo PDF
+        </a>
+    </div>
 </div>
 
 <div class="cat-layout">
