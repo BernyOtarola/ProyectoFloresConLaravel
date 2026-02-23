@@ -9,52 +9,61 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // ── Login ────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════
+    // ADMIN
+    // ══════════════════════════════════════════════════════
 
     public function loginForm()
     {
-        if (Auth::guard('admin')->check()) return redirect()->route('admin.dashboard');
-        if (Auth::guard('web')->check())   return redirect()->route('home');
-
-        return view('auth.login');
+        // Si ya está logueado redirigir directo
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('auth.login-admin');
     }
 
     public function login(Request $request)
     {
         $request->validate([
             'email'    => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required',
         ]);
 
-        $email    = strtolower(trim($request->input('email')));
-        $password = $request->input('password');
+        $credentials = [
+            'email'         => $request->input('email'),
+            'password'      => $request->input('password'),
+            // Auth usará getAuthPasswordName() → 'password_hash' automáticamente
+        ];
 
-        // 1️⃣ ¿Es administradora?
-        // attempt() verifica contra password_hash (getAuthPasswordName),
-        // regenera la sesión automáticamente → protección contra session fixation
-        if (Auth::guard('admin')->attempt(['email' => $email, 'password' => $password])) {
+        if (Auth::guard('admin')->attempt($credentials)) {
+            // Protección contra session fixation
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
 
-        // 2️⃣ ¿Es suscriptora con cuenta activa?
-        // El campo 'activo' => 1 se agrega como WHERE adicional al query
-        if (Auth::guard('web')->attempt(['email' => $email, 'password' => $password, 'activo' => 1])) {
-            $request->session()->regenerate();
-            return redirect()->route('home');
-        }
-
         return back()
-            ->withInput(['email' => $email])
-            ->withErrors(['email' => 'Correo o contraseña incorrectos.']);
+            ->withInput(['email' => $request->input('email')])
+            ->withErrors(['email' => 'Credenciales incorrectas.']);
     }
 
-    // ── Registro ─────────────────────────────────────────
+    public function logoutAdmin(Request $request)
+    {
+        Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login.admin');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // CLIENTE (suscriptor con cuenta)
+    // ══════════════════════════════════════════════════════
 
     public function registroForm()
     {
-        if (Auth::guard('web')->check()) return redirect()->route('home');
-
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('home');
+        }
         return view('auth.registro');
     }
 
@@ -62,55 +71,56 @@ class AuthController extends Controller
     {
         $request->validate([
             'nombre'   => 'required|string|max:100',
-            'email'    => 'required|email|max:150',
-            'password' => 'required|string|min:6|confirmed',
+            'email'    => 'required|email|unique:suscriptores,email',
+            'password' => 'required|min:8|confirmed',
         ]);
 
-        $email = strtolower(trim($request->input('email')));
-        $hash  = Hash::make($request->input('password'));
+        $suscriptor = Suscriptor::create([
+            'nombre'        => trim($request->input('nombre')),
+            'email'         => strtolower(trim($request->input('email'))),
+            'password_hash' => Hash::make($request->input('password')),
+            'activo'        => true,
+        ]);
 
-        $existente = Suscriptor::where('email', $email)->first();
-
-        if ($existente) {
-            if ($existente->password_hash) {
-                return back()->withErrors([
-                    'email' => 'Ese correo ya tiene cuenta. Iniciá sesión.'
-                ]);
-            }
-            // Suscriptora sin contraseña → activar cuenta
-            $existente->update(['password_hash' => $hash]);
-            $user = $existente;
-        } else {
-            $user = Suscriptor::create([
-                'nombre'        => trim($request->input('nombre')),
-                'email'         => $email,
-                'password_hash' => $hash,
-                'activo'        => true,
-            ]);
-        }
-
-        // Login automático + regeneración de sesión
-        Auth::guard('web')->login($user);
+        // Login automático tras registro
+        Auth::guard('web')->login($suscriptor);
         $request->session()->regenerate();
 
         return redirect()->route('home')
-            ->with('success', '¡Bienvenida, ' . $user->nombre . '! 🌺');
+            ->with('success', '¡Bienvenida, ' . $suscriptor->nombre . '! Tu cuenta fue creada exitosamente.');
     }
 
-    // ── Logout ───────────────────────────────────────────
+    public function loginClienteForm()
+    {
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('home');
+        }
+        return view('auth.login-cliente');
+    }
+
+    public function loginCliente(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::guard('web')->attempt([
+            'email'    => $request->input('email'),
+            'password' => $request->input('password'),
+        ])) {
+            $request->session()->regenerate();
+            return redirect()->route('home');
+        }
+
+        return back()
+            ->withInput(['email' => $request->input('email')])
+            ->withErrors(['email' => 'Credenciales incorrectas.']);
+    }
 
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('home');
-    }
-
-    public function logoutAdmin(Request $request)
-    {
-        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

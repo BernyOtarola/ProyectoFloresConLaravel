@@ -1,8 +1,19 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+/*
+|--------------------------------------------------------------------------
+| Console Routes / Scheduled Commands
+|--------------------------------------------------------------------------
+|
+| En Laravel 12 el scheduler se define aquí en lugar de Kernel.php.
+| El comando pedidos:limpiar corre todos los días a medianoche.
+| Borra pedidos cuya fecha_retiro sea anterior a hoy.
+|
+*/
+
+Schedule::command('pedidos:limpiar')
+    ->dailyAt('00:01')          // 12:01 AM cada día
+    ->withoutOverlapping()      // evita que se ejecute dos veces si tarda
+    ->runInBackground();        // no bloquea otros jobs

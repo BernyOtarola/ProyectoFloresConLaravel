@@ -14,29 +14,26 @@ class Admin extends Authenticatable
         'password_hash',
     ];
 
-    public $timestamps = false;
-
     protected $hidden = [
         'password_hash',
     ];
 
-    // ── Autenticación ────────────────────────────────────
-    // Indica a Laravel qué columna contiene la contraseña
+    // ── Timestamps ───────────────────────────────────────
+    // La tabla solo tiene creado_en, sin updated_at
+    const CREATED_AT = 'creado_en';
+    const UPDATED_AT = null;
+
+    // ── Auth: columna de contraseña ───────────────────────
+    // La tabla usa password_hash en lugar del estándar "password"
     public function getAuthPasswordName(): string
     {
         return 'password_hash';
     }
 
-    // Sin columna remember_token en la tabla → desactivar
+    // ── Auth: sin remember token ──────────────────────────
+    // La tabla admins no tiene columna remember_token
     public function getRememberTokenName(): string
     {
         return '';
-    }
-
-    // ── Scopes ───────────────────────────────────────────
-
-    public function scopeByEmail($query, string $email)
-    {
-        return $query->where('email', $email);
     }
 }

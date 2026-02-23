@@ -6,8 +6,8 @@ return [
     |--------------------------------------------------------------------------
     | Authentication Defaults
     |--------------------------------------------------------------------------
-    | 'web'   → suscriptores con cuenta (clientes de la tienda)
-    | 'admin' → administradoras del panel
+    | El guard por defecto es 'web' que apunta a los suscriptores (clientes).
+    | Para admin se usa Auth::guard('admin') explícitamente.
     */
 
     'defaults' => [
@@ -17,24 +17,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication Guards
+    | Guards
     |--------------------------------------------------------------------------
     */
 
     'guards' => [
-
-        // Clientes / suscriptoras
+        // Clientes (tabla suscriptores)
         'web' => [
             'driver'   => 'session',
             'provider' => 'suscriptores',
         ],
 
-        // Administradoras del panel
+        // Administradores (tabla admins)
         'admin' => [
             'driver'   => 'session',
             'provider' => 'admins',
         ],
-
     ],
 
     /*
@@ -44,7 +42,6 @@ return [
     */
 
     'providers' => [
-
         'suscriptores' => [
             'driver' => 'eloquent',
             'model'  => App\Models\Suscriptor::class,
@@ -54,33 +51,23 @@ return [
             'driver' => 'eloquent',
             'model'  => App\Models\Admin::class,
         ],
-
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Resetting Passwords
+    | Password Reset (no se usa en este proyecto pero Laravel lo requiere)
     |--------------------------------------------------------------------------
     */
 
     'passwords' => [
-
         'suscriptores' => [
             'provider' => 'suscriptores',
             'table'    => 'password_reset_tokens',
             'expire'   => 60,
             'throttle' => 60,
         ],
-
-        'admins' => [
-            'provider' => 'admins',
-            'table'    => 'password_reset_tokens',
-            'expire'   => 60,
-            'throttle' => 60,
-        ],
-
     ],
 
-    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'password_timeout' => 10800,
 
 ];

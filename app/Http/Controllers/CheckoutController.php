@@ -12,28 +12,28 @@ class CheckoutController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'nombre'   => 'required|string|max:150',
-            'telefono' => 'required|string|max:20',
-            'tipo'     => 'required|in:retiro,envio',
-            'carrito'  => 'required|array|min:1',
+            'nombre'        => 'required|string|max:150',
+            'telefono'      => 'required|string|max:20',
+            'tipo'          => 'required|in:retiro,envio',
+            'fecha_retiro'  => 'required|date|after_or_equal:today',  // ← obligatoria
+            'carrito'       => 'required|array|min:1',
         ]);
 
-        $tipo = $request->input('tipo');
-
-        if ($tipo === 'envio') {
+        if ($request->input('tipo') === 'envio') {
             $request->validate([
                 'direccion' => 'required|string|max:500',
             ]);
         }
 
-        // ── #7: sanear todos los inputs de texto ─────────
-        $nombre    = strip_tags(trim($request->input('nombre')));
-        $telefono  = preg_replace('/[^0-9\-\+\s\(\)]/', '', $request->input('telefono'));
-        $email     = filter_var(trim($request->input('email', '')), FILTER_SANITIZE_EMAIL) ?: null;
-        $direccion = strip_tags(trim($request->input('direccion', '')));
-        $nota      = strip_tags(trim($request->input('nota', '')));
+        // Sanear inputs de texto
+        $nombre       = strip_tags(trim($request->input('nombre')));
+        $telefono     = preg_replace('/[^0-9\-\+\s\(\)]/', '', $request->input('telefono'));
+        $email        = filter_var(trim($request->input('email', '')), FILTER_SANITIZE_EMAIL) ?: null;
+        $direccion    = strip_tags(trim($request->input('direccion', '')));
+        $nota         = strip_tags(trim($request->input('nota', '')));
+        $fechaRetiro  = $request->input('fecha_retiro');   // ya validada como date
 
-        // ── #6: recalcular totales desde BD (nunca confiar en el cliente) ──
+        // Recalcular totales desde BD (nunca confiar en el cliente)
         $itemsValidados = [];
         $subtotalReal   = 0.0;
 
@@ -45,8 +45,6 @@ class CheckoutController extends Controller
             if (!$producto) continue;
 
             $cantidad = max(1, (int) ($item['cantidad'] ?? 1));
-
-            // Limitar al stock disponible si hay stock registrado
             if ($producto->stock > 0) {
                 $cantidad = min($cantidad, $producto->stock);
             }
@@ -57,7 +55,6 @@ class CheckoutController extends Controller
                 'precio'   => $producto->precio,
                 'cantidad' => $cantidad,
             ];
-
             $subtotalReal += $producto->precio * $cantidad;
         }
 
@@ -68,10 +65,10 @@ class CheckoutController extends Controller
             ], 422);
         }
 
+        $tipo       = $request->input('tipo');
         $costoEnvio = $tipo === 'envio' ? (float) config('floristeria.costo_envio', 3000) : 0.0;
         $total      = $subtotalReal + $costoEnvio;
-
-        $numero = 'BRI-' . strtoupper(substr(uniqid(), -6)) . '-' . date('Y');
+        $numero     = 'BRI-' . strtoupper(substr(uniqid(), -6)) . '-' . date('Y');
 
         $pedido = Pedido::create([
             'numero_pedido'    => $numero,
@@ -79,6 +76,7 @@ class CheckoutController extends Controller
             'telefono_cliente' => $telefono,
             'email_cliente'    => $email,
             'tipo_entrega'     => $tipo,
+            'fecha_retiro'     => $fechaRetiro,      // ← guardar la fecha
             'direccion_envio'  => $direccion ?: null,
             'nota'             => $nota ?: null,
             'items_json'       => json_encode($itemsValidados, JSON_UNESCAPED_UNICODE),
@@ -88,7 +86,7 @@ class CheckoutController extends Controller
             'estado'           => 'pendiente',
         ]);
 
-        // ── #6: descontar stock de cada producto ─────────
+        // Descontar stock
         foreach ($itemsValidados as $item) {
             Producto::where('id', $item['id'])
                 ->where('stock', '>', 0)

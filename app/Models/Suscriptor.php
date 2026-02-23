@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Suscriptor extends Authenticatable
 {
@@ -16,50 +15,37 @@ class Suscriptor extends Authenticatable
         'activo',
     ];
 
-    protected $casts = [
-        'activo'      => 'boolean',
-        'suscrito_en' => 'datetime',
-    ];
-
     protected $hidden = [
         'password_hash',
     ];
 
+    // ── Timestamps ───────────────────────────────────────
+    // La tabla solo tiene suscrito_en, sin updated_at
     const CREATED_AT = 'suscrito_en';
     const UPDATED_AT = null;
 
-    // ── Autenticación ────────────────────────────────────
-    // Indica a Laravel qué columna contiene la contraseña
+    // ── Auth: columna de contraseña ───────────────────────
     public function getAuthPasswordName(): string
     {
         return 'password_hash';
     }
 
-    // Sin columna remember_token en la tabla → desactivar
+    // ── Auth: sin remember token ──────────────────────────
+    // La tabla suscriptores no tiene columna remember_token
     public function getRememberTokenName(): string
     {
         return '';
     }
 
-    // ── Scopes ───────────────────────────────────────────
-
-    public function scopeActivos($query)
-    {
-        return $query->where('activo', true);
-    }
-
-    public function scopeConCuenta($query)
-    {
-        return $query->whereNotNull('password_hash');
-    }
-
     // ── Accessors ────────────────────────────────────────
 
+    // ¿Tiene cuenta con contraseña?
     public function getTieneCuentaAttribute(): bool
     {
-        return !empty($this->password_hash);
+        return !is_null($this->password_hash);
     }
 
+    // Fecha de suscripción formateada
     public function getFechaFormateadaAttribute(): string
     {
         return $this->suscrito_en?->format('d/m/Y') ?? '—';
