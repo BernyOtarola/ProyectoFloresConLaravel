@@ -191,8 +191,13 @@
         <div class="sb-section">Tienda</div>
         <a href="{{ route('home') }}" class="sb-link"><span>🔗</span> Ver tienda</a>
     </nav>
+
+    {{-- ↓ Auth::guard('admin') en lugar de session('admin_nombre') --}}
     <div class="sb-footer">
-        <div class="sb-user">Sesión como<strong>{{ session('admin_nombre', '') }}</strong></div>
+        <div class="sb-user">
+            Sesión como
+            <strong>{{ Auth::guard('admin')->user()->nombre }}</strong>
+        </div>
         <a href="{{ route('logout.admin') }}" class="btn-logout">Cerrar sesión</a>
     </div>
 </aside>
@@ -225,10 +230,10 @@
 
 <script>
 (function() {
-    const sidebar = document.getElementById('adminSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+    const sidebar   = document.getElementById('adminSidebar');
+    const overlay   = document.getElementById('sidebarOverlay');
     const hamburger = document.getElementById('adminHamburger');
-    const closeBtn = document.getElementById('sidebarClose');
+    const closeBtn  = document.getElementById('sidebarClose');
 
     function openSidebar() {
         sidebar.classList.add('open');
@@ -245,7 +250,6 @@
     closeBtn.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
 
-    // Cerrar al tocar un link del sidebar (UX móvil)
     sidebar.querySelectorAll('.sb-link').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 900) closeSidebar();

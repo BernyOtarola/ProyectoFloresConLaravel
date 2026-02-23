@@ -16,8 +16,9 @@ class SuscriptorController extends Controller
         return view('admin.suscriptores.index', compact('suscriptores'));
     }
 
-    public function destroy(Suscriptor $suscriptor)
+    public function eliminar($id)                  // ← era destroy(Suscriptor $suscriptor)
     {
+        $suscriptor = Suscriptor::findOrFail($id);
         $suscriptor->delete();
 
         return redirect()->route('admin.suscriptores.index')

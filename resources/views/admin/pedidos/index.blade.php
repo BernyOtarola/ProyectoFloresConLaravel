@@ -2,11 +2,6 @@
 @section('page-title', 'Pedidos')
 
 @section('content')
-@php
-    $badges = ['pendiente'=>'badge-yellow','confirmado'=>'badge-blue','en_proceso'=>'badge-blue','listo'=>'badge-green','entregado'=>'badge-green','cancelado'=>'badge-red'];
-    $labels = ['pendiente'=>'Pendiente','confirmado'=>'Confirmado','en_proceso'=>'En proceso','listo'=>'Listo','entregado'=>'Entregado','cancelado'=>'Cancelado'];
-@endphp
-
 <div class="table-wrap">
     <table>
         <thead>
@@ -14,15 +9,20 @@
         </thead>
         <tbody>
             @forelse($pedidos as $p)
-            @php $st = $p->estado; @endphp
             <tr>
                 <td><strong>{{ $p->numero_pedido }}</strong></td>
                 <td>{{ $p->nombre_cliente }}</td>
-                <td><a href="https://wa.me/506{{ $p->telefono_cliente }}" target="_blank" style="color:var(--verde);">📱 {{ $p->telefono_cliente }}</a></td>
-                <td>{{ $p->tipo_entrega === 'envio' ? '🚗 Domicilio' : '🏪 Retiro' }}</td>
-                <td><strong>{{ formatPrice($p->total) }}</strong></td>
-                <td><span class="badge {{ $badges[$st] ?? 'badge-gray' }}">{{ $labels[$st] ?? $st }}</span></td>
-                <td style="color:var(--gris);font-size:0.83rem;">{{ \Carbon\Carbon::parse($p->creado_en)->format('d/m/Y H:i') }}</td>
+                <td>
+                    <a href="https://wa.me/506{{ $p->telefono_cliente }}" target="_blank" style="color:var(--verde);">
+                        📱 {{ $p->telefono_cliente }}
+                    </a>
+                </td>
+                {{-- #9: accessor del modelo --}}
+                <td>{{ $p->es_envio ? '🚗 Domicilio' : '🏪 Retiro' }}</td>
+                <td><strong>{{ $p->total_formateado }}</strong></td>
+                <td><span class="badge {{ $p->estado_badge }}">{{ $p->estado_label }}</span></td>
+                {{-- #8: accessor en lugar de Carbon::parse() --}}
+                <td style="color:var(--gris);font-size:0.83rem;">{{ $p->fecha_formateada }}</td>
                 <td><a href="{{ route('admin.pedidos.detalle', $p->id) }}" class="btn btn-sm btn-outline">Ver detalle</a></td>
             </tr>
             @empty
@@ -31,4 +31,12 @@
         </tbody>
     </table>
 </div>
+
+{{-- #11: paginación --}}
+@if($pedidos->hasPages())
+<div style="margin-top:1.25rem;display:flex;justify-content:center;">
+    {{ $pedidos->links() }}
+</div>
+@endif
+
 @endsection

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
     protected $table = 'admins';
 
@@ -14,15 +14,26 @@ class Admin extends Model
         'password_hash',
     ];
 
-    // No usar timestamps de Laravel (created_at / updated_at)
-    // la tabla tiene su propio creado_en
     public $timestamps = false;
 
     protected $hidden = [
         'password_hash',
     ];
 
-    // ── Scopes ──────────────────────────────────────────────
+    // ── Autenticación ────────────────────────────────────
+    // Indica a Laravel qué columna contiene la contraseña
+    public function getAuthPasswordName(): string
+    {
+        return 'password_hash';
+    }
+
+    // Sin columna remember_token en la tabla → desactivar
+    public function getRememberTokenName(): string
+    {
+        return '';
+    }
+
+    // ── Scopes ───────────────────────────────────────────
 
     public function scopeByEmail($query, string $email)
     {

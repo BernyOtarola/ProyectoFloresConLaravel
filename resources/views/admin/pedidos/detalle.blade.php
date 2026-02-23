@@ -12,20 +12,19 @@
 @endpush
 
 @section('content')
-@php
-    $badges = ['pendiente'=>'badge-yellow','confirmado'=>'badge-blue','en_proceso'=>'badge-blue','listo'=>'badge-green','entregado'=>'badge-green','cancelado'=>'badge-red'];
-    $labels = ['pendiente'=>'Pendiente','confirmado'=>'Confirmado','en_proceso'=>'En proceso','listo'=>'Listo para retirar','entregado'=>'Entregado','cancelado'=>'Cancelado'];
-    $st = $pedido->estado;
-@endphp
-
 <div class="pedido-grid">
     <div>
         <div class="form-card" style="max-width:100%;">
             <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--verde);margin-bottom:1.5rem;">📦 Detalle del pedido</h3>
+
             <table style="width:100%;border-collapse:collapse;">
                 <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;width:120px;">N° Pedido</td><td><strong>{{ $pedido->numero_pedido }}</strong></td></tr>
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Estado</td><td><span class="badge {{ $badges[$st] ?? 'badge-gray' }}">{{ $labels[$st] ?? $st }}</span></td></tr>
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Fecha</td><td>{{ \Carbon\Carbon::parse($pedido->creado_en)->format('d/m/Y H:i') }}</td></tr>
+                {{-- #9: accessor del modelo --}}
+                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Estado</td>
+                    <td><span class="badge {{ $pedido->estado_badge }}">{{ $pedido->estado_label }}</span></td></tr>
+                {{-- #8: accessor en lugar de Carbon::parse() --}}
+                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Fecha</td>
+                    <td>{{ $pedido->fecha_formateada }}</td></tr>
             </table>
 
             <hr style="border:none;border-top:1px solid rgba(42,74,30,0.08);margin:1.5rem 0;">
@@ -38,7 +37,9 @@
                 @if($pedido->email_cliente)
                 <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Email</td><td style="word-break:break-all;">{{ $pedido->email_cliente }}</td></tr>
                 @endif
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Entrega</td><td>{{ $pedido->tipo_entrega === 'envio' ? '🚗 Domicilio' : '🏪 Retiro en local' }}</td></tr>
+                {{-- #9: accessor --}}
+                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Entrega</td>
+                    <td>{{ $pedido->es_envio ? '🚗 Domicilio' : '🏪 Retiro en local' }}</td></tr>
                 @if($pedido->direccion_envio)
                 <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Dirección</td><td>{{ $pedido->direccion_envio }}</td></tr>
                 @endif
@@ -51,6 +52,7 @@
 
             <h4 style="color:var(--verde);margin-bottom:1rem;">🛒 Productos</h4>
             <table style="width:100%;border-collapse:collapse;">
+                {{-- $pedido->items viene del accessor getItemsAttribute() --}}
                 @foreach($pedido->items as $item)
                 <tr style="border-bottom:1px solid rgba(42,74,30,0.06);">
                     <td style="padding:10px 0;">💐 {{ $item['nombre'] }}</td>
@@ -62,7 +64,11 @@
                 @if($pedido->costo_envio > 0)
                 <tr><td colspan="2" style="color:var(--gris);">Envío</td><td style="text-align:right;">{{ formatPrice($pedido->costo_envio) }}</td></tr>
                 @endif
-                <tr><td colspan="2" style="padding:10px 0;font-weight:600;color:var(--verde);">TOTAL</td><td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--verde);">{{ formatPrice($pedido->total) }}</td></tr>
+                <tr>
+                    <td colspan="2" style="padding:10px 0;font-weight:600;color:var(--verde);">TOTAL</td>
+                    {{-- #9: accessor total_formateado --}}
+                    <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--verde);">{{ $pedido->total_formateado }}</td>
+                </tr>
             </table>
         </div>
     </div>
@@ -74,8 +80,9 @@
                 @csrf @method('PATCH')
                 <div class="form-group">
                     <select name="estado">
-                        @foreach($labels as $val => $lbl)
-                        <option value="{{ $val }}" {{ $st === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                        {{-- #9: constante del modelo en lugar del array local --}}
+                        @foreach(\App\Models\Pedido::ESTADOS as $val => $lbl)
+                        <option value="{{ $val }}" {{ $pedido->estado === $val ? 'selected' : '' }}>{{ $lbl }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -84,7 +91,8 @@
 
             <hr style="border:none;border-top:1px solid rgba(42,74,30,0.08);margin:1.5rem 0;">
 
-            <a href="https://wa.me/506{{ $pedido->telefono_cliente }}" target="_blank" class="btn" style="width:100%;background:#25D366;color:white;justify-content:center;">
+            <a href="https://wa.me/506{{ $pedido->telefono_cliente }}" target="_blank"
+               class="btn" style="width:100%;background:#25D366;color:white;justify-content:center;">
                 💬 Contactar por WhatsApp
             </a>
         </div>

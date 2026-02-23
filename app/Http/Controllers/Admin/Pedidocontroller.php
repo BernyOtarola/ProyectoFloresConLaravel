@@ -10,7 +10,8 @@ class PedidoController extends Controller
 {
     public function index()
     {
-        $pedidos = Pedido::latest('creado_en')->get();
+        // ── #11: paginación en lugar de get() ────────────
+        $pedidos = Pedido::latest('creado_en')->paginate(20);
 
         return view('admin.pedidos.index', compact('pedidos'));
     }
@@ -18,17 +19,17 @@ class PedidoController extends Controller
     public function detalle($id)
     {
         $pedido = Pedido::findOrFail($id);
-        $items = json_decode($pedido->items_json, true) ?? [];
 
-        return view('admin.pedidos.detalle', compact('pedido', 'items'));
+        // $pedido->items ya viene del accessor getItemsAttribute()
+        return view('admin.pedidos.detalle', compact('pedido'));
     }
 
-    public function cambiarEstado(Request $request, $id)    // ← FIX: era estado()
+    public function cambiarEstado(Request $request, $id)
     {
         $pedido = Pedido::findOrFail($id);
 
         $request->validate([
-            'estado' => 'required|in:pendiente,confirmado,en_proceso,listo,entregado,cancelado',
+            'estado' => 'required|in:' . implode(',', array_keys(Pedido::ESTADOS)),
         ]);
 
         $pedido->update(['estado' => $request->input('estado')]);

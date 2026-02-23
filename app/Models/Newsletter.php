@@ -19,6 +19,10 @@ class Newsletter extends Model
         'enviado_en' => 'datetime',
     ];
 
-    const CREATED_AT = 'enviado_en';
-    const UPDATED_AT = null;
+    // ── Sin CREATED_AT ni UPDATED_AT ────────────────────
+    // La tabla solo tiene enviado_en que el controlador
+    // asigna explícitamente con now(). Dejar que Eloquent
+    // intente mapear created_at → enviado_en causaba que
+    // el campo se escribiera dos veces en el INSERT.
+    public $timestamps = false;
 }

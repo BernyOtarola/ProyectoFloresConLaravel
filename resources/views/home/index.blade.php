@@ -212,21 +212,15 @@
         }
 
         @keyframes flotar {
-
-            0%,
-            100% {
-                transform: translateY(0) rotate(-3deg)
-            }
-
-            50% {
-                transform: translateY(-20px) rotate(3deg)
-            }
+            0%, 100% { transform: translateY(0) rotate(-3deg) }
+            50%       { transform: translateY(-20px) rotate(3deg) }
         }
 
         .hero-pattern {
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(circle at 20% 20%, rgba(184, 147, 90, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(196, 113, 74, 0.1) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 20% 20%, rgba(184, 147, 90, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 80%, rgba(196, 113, 74, 0.1) 0%, transparent 50%);
         }
 
         .stats-bar {
@@ -242,9 +236,7 @@
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .stat:last-child {
-            border-right: none;
-        }
+        .stat:last-child { border-right: none; }
 
         .stat-num {
             font-family: 'Cormorant Garamond', serif;
@@ -261,9 +253,7 @@
             text-transform: uppercase;
         }
 
-        section {
-            padding: 6rem 5%;
-        }
+        section { padding: 6rem 5%; }
 
         .section-header {
             text-align: center;
@@ -287,9 +277,7 @@
             line-height: 1.2;
         }
 
-        .section-title em {
-            font-style: italic;
-        }
+        .section-title em { font-style: italic; }
 
         .section-sub {
             color: var(--gris);
@@ -320,10 +308,7 @@
             border-color: var(--verde);
         }
 
-        .cat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
+        .cat-icon { font-size: 2.5rem; margin-bottom: 1rem; }
 
         .cat-name {
             font-family: 'Cormorant Garamond', serif;
@@ -332,11 +317,7 @@
             color: var(--verde);
         }
 
-        .cat-count {
-            font-size: 0.8rem;
-            color: var(--gris);
-            margin-top: 4px;
-        }
+        .cat-count { font-size: 0.8rem; color: var(--gris); margin-top: 4px; }
 
         .prod-grid {
             display: grid;
@@ -367,15 +348,8 @@
             overflow: hidden;
         }
 
-        .prod-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .prod-ph {
-            font-size: 5rem;
-        }
+        .prod-img img { width: 100%; height: 100%; object-fit: cover; }
+        .prod-ph { font-size: 5rem; }
 
         .prod-badge {
             position: absolute;
@@ -390,9 +364,7 @@
             text-transform: uppercase;
         }
 
-        .prod-body {
-            padding: 1.5rem;
-        }
+        .prod-body { padding: 1.5rem; }
 
         .prod-cat {
             font-size: 0.75rem;
@@ -446,14 +418,8 @@
             transition: all 0.2s;
         }
 
-        .btn-agregar:hover {
-            background: var(--verde-claro);
-            transform: scale(1.05);
-        }
-
-        .btn-agregar.ok {
-            background: var(--terracota);
-        }
+        .btn-agregar:hover { background: var(--verde-claro); transform: scale(1.05); }
+        .btn-agregar.ok   { background: var(--terracota); }
 
         .entrega-grid {
             display: grid;
@@ -474,13 +440,8 @@
             gap: 1rem;
         }
 
-        .entrega-item:first-child {
-            border-right: 1px solid rgba(42, 74, 30, 0.08);
-        }
-
-        .entrega-icon {
-            font-size: 3rem;
-        }
+        .entrega-item:first-child { border-right: 1px solid rgba(42, 74, 30, 0.08); }
+        .entrega-icon { font-size: 3rem; }
 
         .entrega-title {
             font-family: 'Cormorant Garamond', serif;
@@ -489,12 +450,9 @@
             color: var(--verde);
         }
 
-        .entrega-desc {
-            font-size: 0.9rem;
-            color: var(--gris);
-            line-height: 1.6;
-        }
+        .entrega-desc { font-size: 0.9rem; color: var(--gris); line-height: 1.6; }
 
+        /* ── Newsletter box ─────────────────────────────── */
         .nl-box {
             background: var(--verde);
             border-radius: 32px;
@@ -531,15 +489,12 @@
             margin-bottom: 1rem;
         }
 
-        .nl-box p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 2rem;
-        }
+        .nl-box p { color: rgba(255, 255, 255, 0.7); margin-bottom: 2rem; }
 
         .nl-form {
             display: flex;
             gap: 1rem;
-            max-width: 480px;
+            max-width: 520px;
             margin: 0 auto;
         }
 
@@ -555,9 +510,7 @@
             outline: none;
         }
 
-        .nl-form input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+        .nl-form input::placeholder { color: rgba(255, 255, 255, 0.5); }
 
         .nl-form button {
             background: var(--terracota);
@@ -573,66 +526,33 @@
             white-space: nowrap;
         }
 
-        .nl-form button:hover {
-            background: #d4784f;
-            transform: translateY(-2px);
-        }
+        .nl-form button:hover { background: #d4784f; transform: translateY(-2px); }
+        .nl-form button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
         #nlMsg {
             margin-top: 1rem;
-            color: rgba(255, 255, 255, 0.85);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
             display: none;
         }
 
         @media(max-width:768px) {
-            .hero {
-                grid-template-columns: 1fr;
-                min-height: auto;
-            }
-
-            .hero-right {
-                display: none;
-            }
-
-            .hero-left {
-                padding: 100px 5% 60px;
-            }
-
-            .stats-bar {
-                grid-template-columns: 1fr;
-            }
-
-            .stat {
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .entrega-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .entrega-item:first-child {
-                border-right: none;
-                border-bottom: 1px solid rgba(42, 74, 30, 0.08);
-            }
-
-            .nl-box {
-                padding: 3rem 1.5rem;
-                margin: 0 5% 4rem;
-            }
-
-            .nl-form {
-                flex-direction: column;
-            }
-
-            section {
-                padding: 4rem 5%;
-            }
+            .hero { grid-template-columns: 1fr; min-height: auto; }
+            .hero-right { display: none; }
+            .hero-left { padding: 100px 5% 60px; }
+            .stats-bar { grid-template-columns: 1fr; }
+            .stat { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+            .entrega-grid { grid-template-columns: 1fr; }
+            .entrega-item:first-child { border-right: none; border-bottom: 1px solid rgba(42, 74, 30, 0.08); }
+            .nl-box { padding: 3rem 1.5rem; margin: 0 5% 4rem; }
+            .nl-form { flex-direction: column; }
+            section { padding: 4rem 5%; }
         }
     </style>
 @endpush
 
 @section('content')
+    {{-- ═══ HERO ═══ --}}
     <section class="hero">
         <div class="hero-left">
             <div class="hero-tag">Flores frescas • Costa Rica</div>
@@ -651,12 +571,14 @@
         </div>
     </section>
 
+    {{-- ═══ STATS ═══ --}}
     <div class="stats-bar">
         <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Clientes felices</span></div>
         <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Flores frescas</span></div>
         <div class="stat"><span class="stat-num">24h</span><span class="stat-label">Entrega express</span></div>
     </div>
 
+    {{-- ═══ CATEGORÍAS ═══ --}}
     <section>
         <div class="section-header">
             <div class="section-tag">Explora por categoría</div>
@@ -675,6 +597,7 @@
         </div>
     </section>
 
+    {{-- ═══ PRODUCTOS DESTACADOS ═══ --}}
     <section style="background:white;margin:0 -5%;padding:6rem 5%;">
         <div class="section-header">
             <div class="section-tag">Lo más pedido</div>
@@ -710,6 +633,7 @@
         </div>
     </section>
 
+    {{-- ═══ ENTREGA ═══ --}}
     <section id="entrega">
         <div class="section-header">
             <div class="section-tag">Opciones de entrega</div>
@@ -720,8 +644,7 @@
                 <div class="entrega-icon">🚗</div>
                 <div class="entrega-title">Envío a domicilio</div>
                 <div class="entrega-desc">Te llevamos las flores directamente a tu puerta. Costo:
-                    <strong>{{ formatPrice(config('floristeria.costo_envio')) }}</strong>. Coordinamos por WhatsApp.
-                </div>
+                    <strong>{{ formatPrice(config('floristeria.costo_envio')) }}</strong>. Coordinamos por WhatsApp.</div>
             </div>
             <div class="entrega-item">
                 <div class="entrega-icon">🏪</div>
@@ -732,6 +655,7 @@
         </div>
     </section>
 
+    {{-- ═══ MAPA ═══ --}}
     <section class="map-section" id="ubicacion">
         <div class="section-header">
             <div class="section-tag">Nuestra ubicación</div>
@@ -756,8 +680,7 @@
                 <div class="map-detail">
                     <span>📧</span>
                     <div><a href="mailto:{{ config('floristeria.admin_email') }}"
-                            style="color:var(--verde);text-decoration:none;">{{ config('floristeria.admin_email') }}</a>
-                    </div>
+                            style="color:var(--verde);text-decoration:none;">{{ config('floristeria.admin_email') }}</a></div>
                 </div>
                 <a href="https://maps.app.goo.gl/LibtXFayE1mNFFhL6" target="_blank" class="map-link">
                     🗺️ Abrir en Google Maps
@@ -772,76 +695,86 @@
         </div>
     </section>
 
+    {{-- ═══ NEWSLETTER ═══ --}}
+    <div class="nl-box">
+        <h2>🌸 Suscribite a nuestras novedades</h2>
+        <p>Recibí ofertas exclusivas, tips florales y las últimas novedades de temporada.</p>
+
+        <form id="nlForm" style="display:block;">
+            <div style="display:flex;gap:1rem;max-width:520px;margin:0 auto;flex-wrap:wrap;">
+                <input
+                    type="text"
+                    id="nlNombre"
+                    placeholder="Tu nombre"
+                    style="flex:1;min-width:140px;padding:14px 20px;border-radius:100px;border:none;background:rgba(255,255,255,0.15);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;"
+                >
+                <input
+                    type="email"
+                    id="nlEmail"
+                    placeholder="Tu correo electrónico"
+                    style="flex:2;min-width:200px;padding:14px 20px;border-radius:100px;border:none;background:rgba(255,255,255,0.15);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;"
+                >
+                <button type="button" onclick="suscribir()"
+                    style="background:var(--terracota);color:white;border:none;cursor:pointer;padding:14px 28px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;transition:all 0.2s;white-space:nowrap;">
+                    Suscribirme 🌸
+                </button>
+            </div>
+        </form>
+
+        <p id="nlMsg" style="margin-top:1rem;color:rgba(255,255,255,0.9);font-size:0.95rem;display:none;"></p>
+    </div>
 
 @endsection
 
 @push('js')
-    <script>
-        function addCart(id, nombre, precio, btn) {
-            fetch('{{ route("api.carrito") }}', {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({ accion: 'agregar', id, nombre, precio })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    btn.textContent = '✓ Agregado'; btn.classList.add('ok');
-                    setTimeout(() => { btn.textContent = '+ Agregar'; btn.classList.remove('ok'); }, 1500);
-                    showToast('✓ ' + nombre + ' agregado');
-                    const b = document.querySelector('.cart-badge');
-                    if (b) b.textContent = d.count;
-                    else { const c = document.querySelector('.nav-cart'); const s = document.createElement('span'); s.className = 'cart-badge'; s.textContent = d.count; c.appendChild(s); }
+<script>
+    // ── Agregar al carrito ────────────────────────────────
+    function addCart(id, nombre, precio, btn) {
+        fetch('{{ route("api.carrito") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ accion: 'agregar', id, nombre, precio })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                btn.textContent = '✓ Agregado';
+                btn.classList.add('ok');
+                setTimeout(() => {
+                    btn.textContent = '+ Agregar';
+                    btn.classList.remove('ok');
+                }, 1500);
+                showToast('✓ ' + nombre + ' agregado');
+
+                const badge = document.querySelector('.cart-badge');
+                if (badge) {
+                    badge.textContent = d.count;
+                } else {
+                    const cart = document.querySelector('.nav-cart');
+                    const span = document.createElement('span');
+                    span.className = 'cart-badge';
+                    span.textContent = d.count;
+                    cart.appendChild(span);
                 }
-            });
-        }
-        function suscribir() {
-            const nombre = document.getElementById('nlNombre').value.trim();
-            const email = document.getElementById('nlEmail').value.trim();
-            const msg = document.getElementById('nlMsg');
-            const form = document.getElementById('nlForm');
-
-            if (!nombre || !email) {
-                showToast('Completa nombre y correo');
-                return;
             }
+        });
+    }
 
-            // Deshabilitar botón mientras se envía
-            const btn = form.querySelector('button');
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
-
-            fetch('{{ route("api.suscribir") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ nombre, email })
-            })
-                .then(r => r.json())
-                .then(d => {
-                    if (d.success) {
-                        msg.style.display = 'block';
-                        msg.textContent = d.message;
-                        form.style.display = 'none';
-                        showToast('✓ Suscripción exitosa');
-                    }
-                })
-                .catch(() => {
-                    showToast('Error al suscribir, intenta de nuevo');
-                    btn.disabled = false;
-                    btn.textContent = 'Suscribirme 🌸';
-                });
-        }
+    // ── Suscripción newsletter ────────────────────────────
+    function suscribir() {
         const nombre = document.getElementById('nlNombre').value.trim();
-        const email = document.getElementById('nlEmail').value.trim();
-        const msg = document.getElementById('nlMsg');
-        const form = document.getElementById('nlForm');
+        const email  = document.getElementById('nlEmail').value.trim();
+        const msg    = document.getElementById('nlMsg');
+        const form   = document.getElementById('nlForm');
 
         if (!nombre || !email) {
-            showToast('Completa nombre y correo');
+            showToast('Completá tu nombre y correo 🌸');
             return;
         }
 
-        // Deshabilitar botón mientras se envía
         const btn = form.querySelector('button');
         btn.disabled = true;
         btn.textContent = 'Enviando...';
@@ -854,20 +787,34 @@
             },
             body: JSON.stringify({ nombre, email })
         })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) {
-                    msg.style.display = 'block';
-                    msg.textContent = d.message;
-                    form.style.display = 'none';
-                    showToast('✓ Suscripción exitosa');
-                }
-            })
-            .catch(() => {
-                showToast('Error al suscribir, intenta de nuevo');
-                btn.disabled = false;
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                form.style.display = 'none';
+                msg.style.display  = 'block';
+                msg.textContent    = d.message;
+                showToast('✓ Suscripción exitosa');
+            } else {
+                btn.disabled    = false;
                 btn.textContent = 'Suscribirme 🌸';
-            });
-                }
-    </script>
+                showToast('Algo salió mal, intentá de nuevo');
+            }
+        })
+        .catch(() => {
+            btn.disabled    = false;
+            btn.textContent = 'Suscribirme 🌸';
+            showToast('Error de conexión, intentá de nuevo');
+        });
+    }
+
+    // ── Navbar scroll shadow ──────────────────────────────
+    @if(!session('admin_id') && !session('user_id'))
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) nav.style.boxShadow = window.scrollY > 50
+            ? '0 4px 20px rgba(0,0,0,0.08)'
+            : 'none';
+    });
+    @endif
+</script>
 @endpush

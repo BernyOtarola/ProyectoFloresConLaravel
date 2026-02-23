@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Suscriptor extends Model
+class Suscriptor extends Authenticatable
 {
     protected $table = 'suscriptores';
 
@@ -24,11 +25,23 @@ class Suscriptor extends Model
         'password_hash',
     ];
 
-    // Mapear created_at al campo suscrito_en de la tabla existente
     const CREATED_AT = 'suscrito_en';
     const UPDATED_AT = null;
 
-    // ── Scopes ───────────────────────────────────────────────
+    // ── Autenticación ────────────────────────────────────
+    // Indica a Laravel qué columna contiene la contraseña
+    public function getAuthPasswordName(): string
+    {
+        return 'password_hash';
+    }
+
+    // Sin columna remember_token en la tabla → desactivar
+    public function getRememberTokenName(): string
+    {
+        return '';
+    }
+
+    // ── Scopes ───────────────────────────────────────────
 
     public function scopeActivos($query)
     {
@@ -40,15 +53,13 @@ class Suscriptor extends Model
         return $query->whereNotNull('password_hash');
     }
 
-    // ── Accessors ────────────────────────────────────────────
+    // ── Accessors ────────────────────────────────────────
 
-    // ¿Tiene contraseña registrada?
     public function getTieneCuentaAttribute(): bool
     {
         return !empty($this->password_hash);
     }
 
-    // Fecha formateada: 15/03/2025
     public function getFechaFormateadaAttribute(): string
     {
         return $this->suscrito_en?->format('d/m/Y') ?? '—';

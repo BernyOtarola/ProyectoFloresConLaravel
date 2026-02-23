@@ -20,7 +20,7 @@ class ProductoController extends Controller
         return view('admin.productos.index', compact('productos'));
     }
 
-    public function crear()                          // ← era create()
+    public function crear()
     {
         $categorias = Categoria::orderBy('nombre')->get();
 
@@ -30,7 +30,7 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function guardar(Request $request)        // ← era store()
+    public function guardar(Request $request)
     {
         $data = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, null);
@@ -41,18 +41,18 @@ class ProductoController extends Controller
             ->with('success', 'Producto creado exitosamente.');
     }
 
-    public function editar($id)                      // ← era edit(Producto $producto)
+    public function editar($id)
     {
-        $producto = Producto::findOrFail($id);
+        $producto   = Producto::findOrFail($id);
         $categorias = Categoria::orderBy('nombre')->get();
 
         return view('admin.productos.form', compact('producto', 'categorias'));
     }
 
-    public function actualizar(Request $request, $id) // ← era update()
+    public function actualizar(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
-        $data = $this->validar($request);
+        $data     = $this->validar($request);
         $data['imagen'] = $this->subirImagen($request, $producto->imagen);
 
         $producto->update($data);
@@ -70,7 +70,7 @@ class ProductoController extends Controller
             ->with('success', $producto->activo ? 'Producto activado.' : 'Producto desactivado.');
     }
 
-    public function eliminar($id)                    // ← era destroy()
+    public function eliminar($id)
     {
         $producto = Producto::findOrFail($id);
 
@@ -88,29 +88,40 @@ class ProductoController extends Controller
 
     private function validar(Request $request): array
     {
+        $formatos = implode(',', config('floristeria.productos.formatos_imagen', ['jpg','jpeg','png','gif','webp']));
+        $maxKb    = config('floristeria.productos.imagen_max_kb', 5120);
+
         $data = $request->validate([
             'nombre'       => 'required|string|max:200',
             'descripcion'  => 'nullable|string',
             'precio'       => 'required|numeric|min:0',
             'categoria_id' => 'nullable|exists:categorias,id',
             'stock'        => 'nullable|integer|min:0',
+            // ── #5: validación de imagen ─────────────────
+            // mimes: solo imágenes reales (verifica el contenido, no solo la extensión)
+            // max:   en kilobytes → 5120 = 5 MB
+            'imagen'       => "nullable|image|mimes:{$formatos}|max:{$maxKb}",
         ]);
 
         $data['destacado'] = $request->has('destacado') ? 1 : 0;
         $data['activo']    = $request->has('activo') ? 1 : 0;
         $data['stock']     = $data['stock'] ?? 0;
 
+        // Quitar imagen del array de datos del modelo
+        // (se gestiona por separado en subirImagen)
+        unset($data['imagen']);
+
         return $data;
     }
 
     private function subirImagen(Request $request, ?string $imagenActual): ?string
     {
-        if ($request->hasFile('imagen')) {
+        if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
             if ($imagenActual) {
                 Storage::disk('public')->delete('products/' . $imagenActual);
             }
 
-            $file = $request->file('imagen');
+            $file   = $request->file('imagen');
             $nombre = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('products', $nombre, 'public');
 

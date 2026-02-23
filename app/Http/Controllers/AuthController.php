@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use App\Models\Suscriptor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // ── Login ────────────────────────────────────────────────
+    // ── Login ────────────────────────────────────────────
 
     public function loginForm()
     {
-        // Si ya tiene sesión activa, redirigir
-        if (session('admin_id'))  return redirect()->route('admin.dashboard');
-        if (session('user_id'))   return redirect()->route('home');
+        if (Auth::guard('admin')->check()) return redirect()->route('admin.dashboard');
+        if (Auth::guard('web')->check())   return redirect()->route('home');
 
         return view('auth.login');
     }
@@ -30,25 +29,18 @@ class AuthController extends Controller
         $email    = strtolower(trim($request->input('email')));
         $password = $request->input('password');
 
-        // 1️⃣ ¿Es administrador?
-        $admin = Admin::where('email', $email)->first();
-        if ($admin && Hash::check($password, $admin->password_hash)) {
-            session([
-                'admin_id'     => $admin->id,
-                'admin_email'  => $admin->email,
-                'admin_nombre' => $admin->nombre,
-            ]);
+        // 1️⃣ ¿Es administradora?
+        // attempt() verifica contra password_hash (getAuthPasswordName),
+        // regenera la sesión automáticamente → protección contra session fixation
+        if (Auth::guard('admin')->attempt(['email' => $email, 'password' => $password])) {
+            $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
 
-        // 2️⃣ ¿Es suscriptor con cuenta?
-        $user = Suscriptor::where('email', $email)->where('activo', true)->first();
-        if ($user && $user->password_hash && Hash::check($password, $user->password_hash)) {
-            session([
-                'user_id'     => $user->id,
-                'user_nombre' => $user->nombre,
-                'user_email'  => $user->email,
-            ]);
+        // 2️⃣ ¿Es suscriptora con cuenta activa?
+        // El campo 'activo' => 1 se agrega como WHERE adicional al query
+        if (Auth::guard('web')->attempt(['email' => $email, 'password' => $password, 'activo' => 1])) {
+            $request->session()->regenerate();
             return redirect()->route('home');
         }
 
@@ -57,11 +49,11 @@ class AuthController extends Controller
             ->withErrors(['email' => 'Correo o contraseña incorrectos.']);
     }
 
-    // ── Registro ─────────────────────────────────────────────
+    // ── Registro ─────────────────────────────────────────
 
     public function registroForm()
     {
-        if (session('user_id')) return redirect()->route('home');
+        if (Auth::guard('web')->check()) return redirect()->route('home');
 
         return view('auth.registro');
     }
@@ -69,10 +61,9 @@ class AuthController extends Controller
     public function registro(Request $request)
     {
         $request->validate([
-            'nombre'    => 'required|string|max:100',
-            'email'     => 'required|email|max:150',
-            'password'  => 'required|string|min:6|confirmed',
-            // 'password_confirmation' se valida automáticamente con |confirmed
+            'nombre'   => 'required|string|max:100',
+            'email'    => 'required|email|max:150',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $email = strtolower(trim($request->input('email')));
@@ -86,7 +77,7 @@ class AuthController extends Controller
                     'email' => 'Ese correo ya tiene cuenta. Iniciá sesión.'
                 ]);
             }
-            // Suscriptor sin contraseña → activar cuenta
+            // Suscriptora sin contraseña → activar cuenta
             $existente->update(['password_hash' => $hash]);
             $user = $existente;
         } else {
@@ -98,28 +89,31 @@ class AuthController extends Controller
             ]);
         }
 
-        // Loguearlo automáticamente
-        session([
-            'user_id'     => $user->id,
-            'user_nombre' => $user->nombre,
-            'user_email'  => $user->email,
-        ]);
+        // Login automático + regeneración de sesión
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return redirect()->route('home')
             ->with('success', '¡Bienvenida, ' . $user->nombre . '! 🌺');
     }
 
-    // ── Logout ───────────────────────────────────────────────
+    // ── Logout ───────────────────────────────────────────
 
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->forget(['user_id', 'user_nombre', 'user_email']);
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('home');
     }
 
-    public function logoutAdmin()
+    public function logoutAdmin(Request $request)
     {
-        session()->forget(['admin_id', 'admin_email', 'admin_nombre']);
+        Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('home');
     }
 }

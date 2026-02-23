@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -17,37 +18,70 @@ class CarritoController extends Controller
 
     public function api(Request $request): JsonResponse
     {
-        $accion = $request->input('accion');
+        $accion  = $request->input('accion');
         $carrito = session('carrito', []);
 
         switch ($accion) {
 
             case 'agregar':
-                $id     = (int) $request->input('id');
-                $nombre = strip_tags($request->input('nombre', ''));
-                $precio = (float) $request->input('precio');
-                $cant   = (int) $request->input('cantidad', 1);
+                $id   = (int) $request->input('id');
+                $cant = max(1, (int) $request->input('cantidad', 1));
 
-                if ($id && $nombre && $precio > 0) {
-                    if (isset($carrito[$id])) {
-                        $carrito[$id]['cantidad'] += $cant;
-                    } else {
-                        $carrito[$id] = [
-                            'id'       => $id,
-                            'nombre'   => $nombre,
-                            'precio'   => $precio,
-                            'cantidad' => $cant,
-                        ];
-                    }
+                // ── #6: verificar contra BD antes de agregar ──
+                $producto = Producto::where('id', $id)
+                    ->where('activo', true)
+                    ->first();
+
+                if (!$producto) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Producto no disponible.',
+                        'count'   => $this->calcularCantidad($carrito),
+                        'total'   => $this->calcularTotal($carrito),
+                    ]);
+                }
+
+                $enCarrito    = $carrito[$id]['cantidad'] ?? 0;
+                $nuevaCantidad = $enCarrito + $cant;
+
+                // No permitir agregar más de lo que hay en stock
+                if ($producto->stock > 0 && $nuevaCantidad > $producto->stock) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Solo hay {$producto->stock} unidades disponibles de \"{$producto->nombre}\".",
+                        'count'   => $this->calcularCantidad($carrito),
+                        'total'   => $this->calcularTotal($carrito),
+                    ]);
+                }
+
+                if (isset($carrito[$id])) {
+                    $carrito[$id]['cantidad'] = $nuevaCantidad;
+                } else {
+                    // Precio y nombre siempre desde BD, nunca del request
+                    $carrito[$id] = [
+                        'id'       => $id,
+                        'nombre'   => $producto->nombre,
+                        'precio'   => $producto->precio,
+                        'cantidad' => $cant,
+                    ];
                 }
                 break;
 
             case 'actualizar':
                 $id  = (int) $request->input('id');
                 $qty = (int) $request->input('cantidad');
+
                 if ($id && isset($carrito[$id])) {
-                    if ($qty <= 0) unset($carrito[$id]);
-                    else $carrito[$id]['cantidad'] = $qty;
+                    if ($qty <= 0) {
+                        unset($carrito[$id]);
+                    } else {
+                        // ── #6: verificar stock al actualizar cantidad también ──
+                        $producto = Producto::find($id);
+                        if ($producto && $producto->stock > 0 && $qty > $producto->stock) {
+                            $qty = $producto->stock;
+                        }
+                        $carrito[$id]['cantidad'] = $qty;
+                    }
                 }
                 break;
 
@@ -70,7 +104,7 @@ class CarritoController extends Controller
         ]);
     }
 
-    // ── Helpers privados ────────────────────────────────────
+    // ── Helpers privados ────────────────────────────────
 
     private function calcularTotal(array $carrito): float
     {

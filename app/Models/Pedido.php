@@ -27,12 +27,11 @@ class Pedido extends Model
         'subtotal'    => 'float',
         'costo_envio' => 'float',
         'total'       => 'float',
-        'created_at'  => 'datetime',
+        'creado_en'   => 'datetime',   // ← cast correcto al nombre real de la columna
     ];
 
-    // Usar created_at de Laravel como creado_en
     const CREATED_AT = 'creado_en';
-    const UPDATED_AT = null; // sin updated_at
+    const UPDATED_AT = null;
 
     // Estados válidos
     const ESTADOS = [
@@ -54,7 +53,7 @@ class Pedido extends Model
         'cancelado'   => 'badge-red',
     ];
 
-    // ── Scopes ───────────────────────────────────────────────
+    // ── Scopes ───────────────────────────────────────────
 
     public function scopePendientes($query)
     {
@@ -66,33 +65,39 @@ class Pedido extends Model
         return $query->whereDate('creado_en', today());
     }
 
-    // ── Accessors ────────────────────────────────────────────
+    // ── Accessors ────────────────────────────────────────
 
-    // Devuelve los items como array PHP (decodifica el JSON)
+    // Items como array PHP
     public function getItemsAttribute(): array
     {
         return json_decode($this->items_json, true) ?? [];
     }
 
-    // Etiqueta legible del estado
+    // Etiqueta legible del estado: "En proceso"
     public function getEstadoLabelAttribute(): string
     {
         return self::ESTADOS[$this->estado] ?? $this->estado;
     }
 
-    // Clase CSS del badge según estado
+    // Clase CSS del badge: "badge-blue"
     public function getEstadoBadgeAttribute(): string
     {
         return self::ESTADO_BADGES[$this->estado] ?? 'badge-gray';
     }
 
-    // Total formateado
+    // Total formateado: ₡18.500
     public function getTotalFormateadoAttribute(): string
     {
         return '₡' . number_format($this->total, 0, ',', '.');
     }
 
-    // Es envío a domicilio?
+    // Fecha legible: "22/02/2026 14:35"    ← #8: reemplaza Carbon::parse() en vistas
+    public function getFechaFormateadaAttribute(): string
+    {
+        return $this->creado_en?->format('d/m/Y H:i') ?? '—';
+    }
+
+    // ¿Es envío a domicilio?
     public function getEsEnvioAttribute(): bool
     {
         return $this->tipo_entrega === 'envio';
