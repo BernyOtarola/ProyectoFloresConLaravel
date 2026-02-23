@@ -21,16 +21,8 @@
             --gris: #6B6B6B;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--crema);
@@ -45,11 +37,7 @@
             color: var(--verde);
             text-decoration: none;
         }
-
-        .nav-logo span {
-            color: var(--terracota);
-            font-style: italic;
-        }
+        .nav-logo span { color: var(--terracota); font-style: italic; }
 
         .nav-links {
             display: flex;
@@ -57,7 +45,6 @@
             align-items: center;
             list-style: none;
         }
-
         .nav-links a {
             font-size: 0.875rem;
             color: var(--texto);
@@ -66,10 +53,7 @@
             text-transform: uppercase;
             transition: color 0.2s;
         }
-
-        .nav-links a:hover {
-            color: var(--verde);
-        }
+        .nav-links a:hover { color: var(--verde); }
 
         .nav-btn-outline {
             padding: 8px 16px;
@@ -83,11 +67,7 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
-        .nav-btn-outline:hover {
-            background: var(--verde);
-            color: white;
-        }
+        .nav-btn-outline:hover { background: var(--verde); color: white; }
 
         .nav-btn-ghost {
             padding: 8px 16px;
@@ -101,11 +81,7 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
-        .nav-btn-ghost:hover {
-            border-color: var(--verde);
-            color: var(--verde);
-        }
+        .nav-btn-ghost:hover { border-color: var(--verde); color: var(--verde); }
 
         .nav-btn-admin {
             padding: 8px 16px;
@@ -119,11 +95,7 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
-        .nav-btn-admin:hover {
-            background: var(--terracota);
-            color: white;
-        }
+        .nav-btn-admin:hover { background: var(--terracota); color: white; }
 
         .nav-cart {
             position: relative;
@@ -139,11 +111,7 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-
-        .nav-cart:hover {
-            background: var(--verde-claro);
-            transform: translateY(-1px);
-        }
+        .nav-cart:hover { background: var(--verde-claro); transform: translateY(-1px); }
 
         .cart-badge {
             background: var(--terracota);
@@ -166,7 +134,6 @@
             border: none;
             background: none;
         }
-
         .hamburger span {
             width: 24px;
             height: 2px;
@@ -181,14 +148,12 @@
             padding: 4rem 5% 2rem;
             margin-top: 6rem;
         }
-
         .footer-grid {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
             gap: 4rem;
             margin-bottom: 3rem;
         }
-
         .footer-brand .f-logo {
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.6rem;
@@ -198,18 +163,8 @@
             display: block;
             margin-bottom: 1rem;
         }
-
-        .footer-brand .f-logo span {
-            color: var(--rosa);
-            font-style: italic;
-        }
-
-        .footer-brand p {
-            font-size: 0.9rem;
-            line-height: 1.7;
-            max-width: 300px;
-        }
-
+        .footer-brand .f-logo span { color: var(--rosa); font-style: italic; }
+        .footer-brand p { font-size: 0.9rem; line-height: 1.7; max-width: 300px; }
         .footer-col h4 {
             color: white;
             font-size: 0.875rem;
@@ -217,7 +172,6 @@
             text-transform: uppercase;
             margin-bottom: 1.5rem;
         }
-
         .footer-col a {
             display: block;
             color: rgba(255, 255, 255, 0.5);
@@ -226,11 +180,7 @@
             margin-bottom: 0.6rem;
             transition: color 0.2s;
         }
-
-        .footer-col a:hover {
-            color: var(--rosa);
-        }
-
+        .footer-col a:hover { color: var(--rosa); }
         .footer-bottom {
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding-top: 2rem;
@@ -238,10 +188,7 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .footer-bottom p {
-            font-size: 0.8rem;
-        }
+        .footer-bottom p { font-size: 0.8rem; }
 
         .wa-float {
             position: fixed;
@@ -262,21 +209,10 @@
             transition: all 0.3s;
             animation: pulseWA 2.5s ease-in-out infinite;
         }
-
-        .wa-float:hover {
-            transform: scale(1.1);
-        }
-
+        .wa-float:hover { transform: scale(1.1); }
         @keyframes pulseWA {
-
-            0%,
-            100% {
-                box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.3);
-            }
-
-            70% {
-                box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4), 0 0 0 12px rgba(37, 211, 102, 0);
-            }
+            0%, 100% { box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.3); }
+            70%       { box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4), 0 0 0 12px rgba(37, 211, 102, 0); }
         }
 
         .toast {
@@ -294,63 +230,32 @@
             z-index: 9999;
             pointer-events: none;
         }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         @media (max-width:900px) {
-            .nav-links {
-                display: none;
-            }
-
+            .nav-links { display: none; }
             .nav-links.open {
                 display: flex;
                 flex-direction: column;
                 position: absolute;
                 top: 72px;
-                left: 0;
-                right: 0;
+                left: 0; right: 0;
                 background: var(--crema);
                 border-bottom: 1px solid rgba(42, 74, 30, 0.1);
                 padding: 1.5rem 5%;
                 z-index: 99;
             }
-
-            .hamburger {
-                display: flex;
-            }
+            .hamburger { display: flex; }
         }
 
         @media (max-width:640px) {
-
             .nav-btn-outline,
             .nav-btn-ghost,
-            .nav-btn-admin {
-                font-size: 0;
-                padding: 10px 13px;
-            }
-
-            .nav-btn-outline::before {
-                content: '🌸';
-                font-size: 1rem;
-            }
-
-            .nav-btn-ghost::before {
-                content: '👤';
-                font-size: 1rem;
-            }
-
-            .nav-btn-admin::before {
-                content: '⚙️';
-                font-size: 1rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
+            .nav-btn-admin { font-size: 0; padding: 10px 13px; }
+            .nav-btn-outline::before { content: '🌸'; font-size: 1rem; }
+            .nav-btn-ghost::before   { content: '👤'; font-size: 1rem; }
+            .nav-btn-admin::before   { content: '⚙️'; font-size: 1rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
         }
     </style>
     @stack('css')
@@ -359,6 +264,12 @@
 <body>
 
     @include('partials.nav')
+
+    @if(session('success'))
+        <div style="background:#d4edda;color:#155724;border:1px solid #c3e6cb;padding:12px 20px;font-size:0.875rem;text-align:center;">
+            {{ session('success') }}
+        </div>
+    @endif
 
     @yield('content')
 
@@ -391,24 +302,33 @@
     {{-- Botón flotante WhatsApp --}}
     <a href="https://wa.me/{{ config('floristeria.whatsapp') }}" target="_blank" class="wa-float">💬</a>
 
-    {{-- Chatbot --}}
-    @if(!session('admin_id'))
+    {{-- Chatbot solo para no-admins --}}
+    @if(!Auth::guard('admin')->check())
         @include('partials.chatbot')
     @endif
+
     <div class="toast" id="toast"></div>
 
     <script>
-        function toggleMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.textContent = msg; t.classList.add('show');
+            t.textContent = msg;
+            t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 2500);
         }
-        @if(!session('admin_id') && !session('user_id'))
-            window.addEventListener('scroll', () => {
-                const nav = document.getElementById('navbar');
-                if (nav) nav.style.boxShadow = window.scrollY > 50 ? '0 4px 20px rgba(0,0,0,0.08)' : 'none';
-            });
+
+        // Sombra en navbar solo para invitados (nav fijo)
+        @if(!Auth::guard('admin')->check() && !Auth::guard('web')->check())
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (nav) nav.style.boxShadow = window.scrollY > 50
+                ? '0 4px 20px rgba(0,0,0,0.08)'
+                : 'none';
+        });
         @endif
     </script>
     @stack('js')
