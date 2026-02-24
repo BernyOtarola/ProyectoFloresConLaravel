@@ -51,15 +51,17 @@ return [
 
     // ── Redes sociales (opcionales) ───────────────────────
     'redes' => [
-        'facebook'  => env('FLORISTERIA_FACEBOOK', ''),
-        'instagram' => env('FLORISTERIA_INSTAGRAM', ''),
-        'tiktok'    => env('FLORISTERIA_TIKTOK', ''),
-    ],
+    'facebook'  => env('FLORISTERIA_FACEBOOK', ''),
+    'instagram' => env('FLORISTERIA_INSTAGRAM', ''),
+    'tiktok'    => env('FLORISTERIA_TIKTOK', ''),
+],
 
     // ── Horario ───────────────────────────────���───────────
     'horario' => env('FLORISTERIA_HORARIO', 'Lunes a Sábado: 8:00am - 6:00pm'),
 
     // ── Dirección física ──────────────────────────────────
     'direccion' => env('FLORISTERIA_DIRECCION', 'San José, Costa Rica'),
+
+    
 
 ];
