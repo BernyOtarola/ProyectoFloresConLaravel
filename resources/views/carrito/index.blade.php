@@ -47,10 +47,11 @@
 .tipo-label { font-size:0.9rem;font-weight:500;color:var(--verde); }
 .tipo-sub { font-size:0.75rem;color:var(--gris);margin-top:2px; }
 .fgroup { margin-bottom:1.2rem; }
-.fgroup label { display:block;font-size:0.85rem;font-weight:500;margin-bottom:6px; }
+.fgroup label { display:block;font-size:0.85rem;font-weight:500;margin-bottom:6px;color:var(--verde); }
 .fgroup input,.fgroup textarea { width:100%;padding:12px 14px;border:1.5px solid rgba(42,74,30,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;background:var(--crema);transition:border 0.2s; }
 .fgroup input:focus,.fgroup textarea:focus { border-color:var(--verde); }
 .fgroup textarea { height:80px;resize:vertical; }
+.fgroup .hint { font-size:0.78rem;color:var(--gris);margin-top:4px; }
 .modal-total { background:var(--crema);border-radius:12px;padding:1.25rem;margin:1rem 0;display:flex;justify-content:space-between;align-items:center; }
 .modal-total .lbl { font-size:0.9rem;color:var(--gris); }
 .modal-total .amt { font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--verde); }
@@ -65,7 +66,7 @@
 
 @section('content')
 <div class="page-wrap">
-    <h1>Mi Carrito 🛒</h1>
+    <h1>Mi Carrito</h1>
 
     @if(empty($carrito))
     <div class="empty">
@@ -82,14 +83,14 @@
                 <div class="item-img">💐</div>
                 <div class="item-info">
                     <div class="item-name">{{ $item['nombre'] }}</div>
-                    <div class="item-price">₡{{ number_format($item['precio'], 0, ',', '.') }} c/u</div>
+                    <div class="item-price">C{{ number_format($item['precio'], 0, ',', '.') }} c/u</div>
                     <div class="qty-row">
                         <button class="qty-btn" onclick="cambiar({{ $id }},-1)">−</button>
                         <span class="qty-val" id="qty-{{ $id }}">{{ $item['cantidad'] }}</span>
                         <button class="qty-btn" onclick="cambiar({{ $id }},1)">+</button>
                     </div>
                 </div>
-                <div class="item-sub" id="sub-{{ $id }}">₡{{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}</div>
+                <div class="item-sub" id="sub-{{ $id }}">C{{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}</div>
                 <button class="btn-del" onclick="eliminar({{ $id }})">🗑️</button>
             </div>
             @endforeach
@@ -97,12 +98,12 @@
 
         <div class="summary">
             <div class="summary-title">Resumen</div>
-            <div class="summary-row"><span>Subtotal</span><span id="sSubtotal">₡{{ number_format($subtotal, 0, ',', '.') }}</span></div>
-            <div class="summary-row"><span>Envío</span><span>Calcular al confirmar</span></div>
-            <div class="summary-total"><span>Estimado</span><span id="sTotal">₡{{ number_format($subtotal, 0, ',', '.') }}</span></div>
-            <p class="envio-note">Envío {{ formatPrice(config('floristeria.costo_envio')) }} · Retiro gratis</p>
-            <button class="btn-checkout" onclick="document.getElementById('checkoutOverlay').classList.add('open')">Confirmar pedido →</button>
-            <a href="{{ route('catalogo') }}" class="btn-seguir">+ Agregar más flores</a>
+            <div class="summary-row"><span>Subtotal</span><span id="sSubtotal">C{{ number_format($subtotal, 0, ',', '.') }}</span></div>
+            <div class="summary-row"><span>Envio</span><span>Calcular al confirmar</span></div>
+            <div class="summary-total"><span>Estimado</span><span id="sTotal">C{{ number_format($subtotal, 0, ',', '.') }}</span></div>
+            <p class="envio-note">Envio {{ formatPrice(config('floristeria.costo_envio')) }} - Retiro gratis</p>
+            <button class="btn-checkout" onclick="document.getElementById('checkoutOverlay').classList.add('open')">Confirmar pedido</button>
+            <a href="{{ route('catalogo') }}" class="btn-seguir">+ Agregar mas flores</a>
         </div>
     </div>
     @endif
@@ -112,7 +113,7 @@
 <div class="overlay" id="checkoutOverlay">
     <div class="modal">
         <h2>Confirmar pedido</h2>
-        <p class="sub">Completa tus datos y te enviamos la confirmación por WhatsApp.</p>
+        <p class="sub">Completa tus datos y te enviamos la confirmacion por WhatsApp.</p>
 
         <div class="tipo-grid">
             <button class="tipo-btn active" id="btnRetiro" onclick="setTipo('retiro')">
@@ -122,24 +123,44 @@
             </button>
             <button class="tipo-btn" id="btnEnvio" onclick="setTipo('envio')">
                 <div class="tipo-icon">🚗</div>
-                <div class="tipo-label">Envío a domicilio</div>
+                <div class="tipo-label">Envio a domicilio</div>
                 <div class="tipo-sub">{{ formatPrice(config('floristeria.costo_envio')) }} adicionales</div>
             </button>
         </div>
 
-        <div class="fgroup"><label>Nombre completo *</label><input type="text" id="cNombre" placeholder="María González"></div>
-        <div class="fgroup"><label>Teléfono WhatsApp *</label><input type="tel" id="cTel" placeholder="88001234"></div>
-        <div class="fgroup"><label>Correo (opcional)</label><input type="email" id="cEmail" placeholder="tu@correo.com"></div>
-        <div id="envioFields">
-            <div class="fgroup"><label>Dirección de entrega *</label><input type="text" id="cDir" placeholder="Provincia, cantón, señas…"></div>
+        <div class="fgroup">
+            <label>Nombre completo *</label>
+            <input type="text" id="cNombre" placeholder="Maria Gonzalez">
         </div>
-        <div class="fgroup"><label>Nota especial (opcional)</label><textarea id="cNota" placeholder="Ej: Es para regalo, agregar tarjeta…"></textarea></div>
+        <div class="fgroup">
+            <label>Telefono WhatsApp *</label>
+            <input type="tel" id="cTel" placeholder="88001234">
+        </div>
+        <div class="fgroup">
+            <label>Correo (opcional)</label>
+            <input type="email" id="cEmail" placeholder="tu@correo.com">
+        </div>
+        <div class="fgroup">
+            <label>Fecha de retiro / entrega *</label>
+            <input type="date" id="cFechaRetiro">
+            <div class="hint">Indica el dia en que pasaras a retirar o recibiras tu pedido.</div>
+        </div>
+        <div id="envioFields">
+            <div class="fgroup">
+                <label>Direccion de entrega *</label>
+                <input type="text" id="cDir" placeholder="Provincia, canton, senas...">
+            </div>
+        </div>
+        <div class="fgroup">
+            <label>Nota especial (opcional)</label>
+            <textarea id="cNota" placeholder="Ej: Es para regalo, agregar tarjeta..."></textarea>
+        </div>
 
         <div class="modal-total">
             <span class="lbl">Total a pagar</span>
-            <span class="amt" id="modalTotal">₡{{ number_format($subtotal ?? 0, 0, ',', '.') }}</span>
+            <span class="amt" id="modalTotal">C{{ number_format($subtotal ?? 0, 0, ',', '.') }}</span>
         </div>
-        <button class="btn-wa" onclick="enviarWA()">💬 Enviar pedido por WhatsApp</button>
+        <button class="btn-wa" onclick="enviarPedido()">💬 Enviar pedido por WhatsApp</button>
         <span class="btn-cancelar" onclick="document.getElementById('checkoutOverlay').classList.remove('open')">Cancelar</span>
     </div>
 </div>
@@ -148,18 +169,28 @@
 @push('js')
 <script>
 let tipoEntrega = 'retiro';
-const base = {{ $subtotal ?? 0 }};
-const envCosto = {{ config('floristeria.costo_envio') }};
-const cartData = @json(array_values($carrito ?? []));
+const base      = {{ $subtotal ?? 0 }};
+const envCosto  = {{ config('floristeria.costo_envio') }};
+const cartData  = @json(array_values($carrito ?? []));
 const csrfToken = '{{ csrf_token() }}';
+
+// Fecha minima = hoy
+document.addEventListener('DOMContentLoaded', () => {
+    const inputFecha = document.getElementById('cFechaRetiro');
+    if (inputFecha) {
+        const hoy = new Date().toISOString().split('T')[0];
+        inputFecha.min   = hoy;
+        inputFecha.value = hoy;
+    }
+});
 
 function setTipo(t) {
     tipoEntrega = t;
     document.getElementById('btnRetiro').classList.toggle('active', t === 'retiro');
-    document.getElementById('btnEnvio').classList.toggle('active', t === 'envio');
+    document.getElementById('btnEnvio').classList.toggle('active',  t === 'envio');
     document.getElementById('envioFields').style.display = t === 'envio' ? 'block' : 'none';
     const tot = t === 'envio' ? base + envCosto : base;
-    document.getElementById('modalTotal').textContent = '₡' + tot.toLocaleString('es-CR');
+    document.getElementById('modalTotal').textContent = 'C' + tot.toLocaleString('es-CR');
 }
 
 function cambiar(id, delta) {
@@ -174,7 +205,7 @@ function cambiar(id, delta) {
         el.textContent = q;
         actualizarTotales(d.total);
         const precio = cartData.find(i => i.id == id)?.precio || 0;
-        document.getElementById('sub-' + id).textContent = '₡' + (precio * q).toLocaleString('es-CR');
+        document.getElementById('sub-' + id).textContent = 'C' + (precio * q).toLocaleString('es-CR');
     });
 }
 
@@ -191,61 +222,93 @@ function eliminar(id) {
 }
 
 function actualizarTotales(total) {
-    const f = '₡' + total.toLocaleString('es-CR');
+    const f = 'C' + total.toLocaleString('es-CR');
     document.getElementById('sSubtotal').textContent = f;
-    document.getElementById('sTotal').textContent = f;
+    document.getElementById('sTotal').textContent    = f;
 }
 
-function enviarWA() {
-    const nombre = document.getElementById('cNombre').value.trim();
-    const tel = document.getElementById('cTel').value.trim();
-    const email = document.getElementById('cEmail').value.trim();
-    const nota = document.getElementById('cNota').value.trim();
-    const dir = document.getElementById('cDir')?.value.trim() || '';
-    if (!nombre || !tel) { alert('Completa nombre y teléfono'); return; }
-    if (tipoEntrega === 'envio' && !dir) { alert('Ingresa tu dirección de entrega'); return; }
+// ── Funcion principal: armar pedido y abrir WhatsApp ──
+function enviarPedido() {
+    const nombre      = document.getElementById('cNombre').value.trim();
+    const tel         = document.getElementById('cTel').value.trim();
+    const email       = document.getElementById('cEmail').value.trim();
+    const nota        = document.getElementById('cNota').value.trim();
+    const dir         = document.getElementById('cDir')?.value.trim() || '';
+    const fechaRetiro = document.getElementById('cFechaRetiro').value;
+
+    if (!nombre || !tel)  { alert('Completa nombre y telefono'); return; }
+    if (!fechaRetiro)     { alert('Selecciona la fecha de retiro o entrega'); return; }
+    if (tipoEntrega === 'envio' && !dir) { alert('Ingresa tu direccion de entrega'); return; }
 
     const pedido = {
-        nombre, telefono: tel, email, nota, direccion: dir,
-        tipo: tipoEntrega, carrito: cartData, subtotal: base,
-        envio: tipoEntrega === 'envio' ? envCosto : 0,
-        total: tipoEntrega === 'envio' ? base + envCosto : base
+        nombre,
+        telefono:     tel,
+        email,
+        nota,
+        direccion:    dir,
+        tipo:         tipoEntrega,
+        fecha_retiro: fechaRetiro,
+        carrito:      cartData,
+        subtotal:     base,
+        envio:        tipoEntrega === 'envio' ? envCosto : 0,
+        total:        tipoEntrega === 'envio' ? base + envCosto : base,
     };
+
     fetch('{{ route("api.checkout") }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
         body: JSON.stringify(pedido)
     }).then(r => r.json()).then(data => {
-        // Arma mensaje bonito para WhatsApp
-        let msg = `🌺 *NUEVO PEDIDO - Floristería Bribri* 🌺\n📋 Pedido #${data.numero || 'N/A'}\n\n`;
-        msg += `👤 *Cliente:* ${nombre}\n📱 *Teléfono:* ${tel}\n`;
-        if (email) msg += `📧 *Email:* ${email}\n`;
-        msg += `\n📦 *Entrega:* ${tipoEntrega === 'envio' ? '🚗 Domicilio' : '🏪 Retiro'}\n`;
-        if (tipoEntrega === 'envio') msg += `📍 *Dirección:* ${dir}\n`;
-        msg += `\n*🛒 Productos:*\n`;
-        cartData.forEach(i => {
-            msg += `• ${i.nombre} x${i.cantidad} = ₡${(i.precio * i.cantidad).toLocaleString('es-CR')}\n`;
+
+        if (!data.success) {
+            alert(data.message || 'Error al procesar el pedido.');
+            return;
+        }
+
+        // Fecha legible (ej: "lunes 24 de febrero")
+        const fechaObj   = new Date(fechaRetiro + 'T12:00:00');
+        const fechaTexto = fechaObj.toLocaleDateString('es-CR', {
+            weekday: 'long', day: 'numeric', month: 'long'
         });
-        msg += `\n💰 *Subtotal:* ₡${base.toLocaleString('es-CR')}\n`;
-        if (tipoEntrega === 'envio') msg += `🚗 *Envío:* ₡${envCosto.toLocaleString('es-CR')}\n`;
-        msg += `✅ *TOTAL: ₡${(pedido.total).toLocaleString('es-CR')}*`;
-        if (nota) msg += `\n📝 *Nota:* ${nota}`;
 
-        // Abre WhatsApp con el mensaje
-        window.open(`https://wa.me/{{ config('floristeria.whatsapp') }}?text=${encodeURIComponent(msg)}`, '_blank');
+        // Mensaje WhatsApp limpio — sin emojis especiales que se corrompan
+        let msg = '*NUEVO PEDIDO - Floristeria Bribri*\n';
+        msg += 'Pedido #' + (data.numero || 'N/A') + '\n\n';
+        msg += '*Cliente:* '  + nombre + '\n';
+        msg += '*Telefono:* ' + tel    + '\n';
+        if (email) msg += '*Email:* ' + email + '\n';
+        msg += '\n*Entrega:* ' + (tipoEntrega === 'envio' ? 'Domicilio' : 'Retiro en local') + '\n';
+        msg += '*Fecha:* '    + fechaTexto + '\n';
+        if (tipoEntrega === 'envio') msg += '*Direccion:* ' + dir + '\n';
+        msg += '\n*Productos:*\n';
+        cartData.forEach(i => {
+            msg += '- ' + i.nombre + ' x' + i.cantidad + ' = C' + (i.precio * i.cantidad).toLocaleString('es-CR') + '\n';
+        });
+        msg += '\n*Subtotal:* C' + base.toLocaleString('es-CR') + '\n';
+        if (tipoEntrega === 'envio') msg += '*Envio:* C' + envCosto.toLocaleString('es-CR') + '\n';
+        msg += '*TOTAL: C' + pedido.total.toLocaleString('es-CR') + '*';
+        if (nota) msg += '\n*Nota:* ' + nota;
 
-        // Limpia carrito en backend
+        window.open(
+            'https://wa.me/{{ config("floristeria.whatsapp") }}?text=' + encodeURIComponent(msg),
+            '_blank'
+        );
+
+        // Limpiar carrito
         fetch('{{ route("api.carrito") }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ accion: 'limpiar' })
         });
 
-        // Redirige al home
         setTimeout(() => { window.location.href = '{{ route("home") }}' }, 500);
+
+    }).catch(() => {
+        alert('Error de conexion. Intenta de nuevo.');
     });
 }
 
+// Cerrar modal al click fuera
 document.getElementById('checkoutOverlay')?.addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });

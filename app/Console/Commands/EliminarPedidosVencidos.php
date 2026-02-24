@@ -14,6 +14,7 @@ class EliminarPedidosVencidos extends Command
     {
         // Buscar pedidos con fecha_retiro anterior a hoy
         // Ejemplo: si fecha_retiro = 2026-02-23, se borra el 2026-02-24 o después
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Pedido> $pedidos */
         $pedidos = Pedido::vencidos()->get();
 
         if ($pedidos->isEmpty()) {
@@ -23,6 +24,7 @@ class EliminarPedidosVencidos extends Command
 
         $total = $pedidos->count();
 
+        /** @var Pedido $pedido */
         foreach ($pedidos as $pedido) {
             $this->line("  → Eliminando #{$pedido->numero_pedido} (retiro: {$pedido->fecha_retiro_formateada})");
             $pedido->delete();

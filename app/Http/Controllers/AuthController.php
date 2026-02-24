@@ -10,17 +10,25 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     // ══════════════════════════════════════════════════════
-    // ADMIN
+    // FORMULARIO DE LOGIN (compartido admin + cliente)
     // ══════════════════════════════════════════════════════
 
     public function loginForm()
     {
-        // Si ya está logueado redirigir directo
         if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
-        return view('auth.login-admin');
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('home');
+        }
+
+        // FIX #2: 'auth.login' (el archivo que existe), no 'auth.login-admin'
+        return view('auth.login');
     }
+
+    // ══════════════════════════════════════════════════════
+    // LOGIN — intenta admin primero, luego cliente
+    // ══════════════════════════════════════════════════════
 
     public function login(Request $request)
     {
@@ -30,15 +38,20 @@ class AuthController extends Controller
         ]);
 
         $credentials = [
-            'email'         => $request->input('email'),
-            'password'      => $request->input('password'),
-            // Auth usará getAuthPasswordName() → 'password_hash' automáticamente
+            'email'    => $request->input('email'),
+            'password' => $request->input('password'),
         ];
 
+        // FIX #3: intentar admin primero
         if (Auth::guard('admin')->attempt($credentials)) {
-            // Protección contra session fixation
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
+        }
+
+        // FIX #3: si no es admin, intentar como cliente (suscriptor)
+        if (Auth::guard('web')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('home');
         }
 
         return back()
@@ -46,17 +59,22 @@ class AuthController extends Controller
             ->withErrors(['email' => 'Credenciales incorrectas.']);
     }
 
+    // ══════════════════════════════════════════════════════
+    // LOGOUT ADMIN
+    // ══════════════════════════════════════════════════════
+
     public function logoutAdmin(Request $request)
     {
         Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login.admin');
+        // FIX #1: ruta correcta es 'login', no 'login.admin'
+        return redirect()->route('login');
     }
 
     // ══════════════════════════════════════════════════════
-    // CLIENTE (suscriptor con cuenta)
+    // REGISTRO DE CLIENTE
     // ══════════════════════════════════════════════════════
 
     public function registroForm()
@@ -82,7 +100,6 @@ class AuthController extends Controller
             'activo'        => true,
         ]);
 
-        // Login automático tras registro
         Auth::guard('web')->login($suscriptor);
         $request->session()->regenerate();
 
@@ -90,33 +107,9 @@ class AuthController extends Controller
             ->with('success', '¡Bienvenida, ' . $suscriptor->nombre . '! Tu cuenta fue creada exitosamente.');
     }
 
-    public function loginClienteForm()
-    {
-        if (Auth::guard('web')->check()) {
-            return redirect()->route('home');
-        }
-        return view('auth.login-cliente');
-    }
-
-    public function loginCliente(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::guard('web')->attempt([
-            'email'    => $request->input('email'),
-            'password' => $request->input('password'),
-        ])) {
-            $request->session()->regenerate();
-            return redirect()->route('home');
-        }
-
-        return back()
-            ->withInput(['email' => $request->input('email')])
-            ->withErrors(['email' => 'Credenciales incorrectas.']);
-    }
+    // ══════════════════════════════════════════════════════
+    // LOGOUT CLIENTE
+    // ══════════════════════════════════════════════════════
 
     public function logout(Request $request)
     {

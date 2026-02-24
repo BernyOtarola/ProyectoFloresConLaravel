@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('page-title', 'Admin') — Floristería Bribri</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌺</text></svg>">
     <style>
         :root { --verde:#2A4A1E;--verde-claro:#4A7A35;--crema:#F8F5EE;--terracota:#C4714A;--rosa:#E8B4A0;--texto:#1C1C1C;--gris:#6B6B6B;--sidebar-w:260px; }
         * { margin:0;padding:0;box-sizing:border-box; }

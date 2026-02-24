@@ -18,33 +18,78 @@
             <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--verde);margin-bottom:1.5rem;">📦 Detalle del pedido</h3>
 
             <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;width:120px;">N° Pedido</td><td><strong>{{ $pedido->numero_pedido }}</strong></td></tr>
-                {{-- #9: accessor del modelo --}}
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Estado</td>
-                    <td><span class="badge {{ $pedido->estado_badge }}">{{ $pedido->estado_label }}</span></td></tr>
-                {{-- #8: accessor en lugar de Carbon::parse() --}}
-                <tr><td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Fecha</td>
-                    <td>{{ $pedido->fecha_formateada }}</td></tr>
+                <tr>
+                    <td style="padding:8px 0;color:var(--gris);font-size:0.85rem;width:140px;">N° Pedido</td>
+                    <td><strong>{{ $pedido->numero_pedido }}</strong></td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Estado</td>
+                    <td><span class="badge {{ $pedido->estado_badge }}">{{ $pedido->estado_label }}</span></td>
+                </tr>
+                {{-- FIX #5: mostrar fecha_retiro con alerta visual --}}
+                <tr>
+                    <td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">📅 Fecha retiro</td>
+                    <td>
+                        @if($pedido->fecha_retiro)
+                            @php
+                                $esHoy   = $pedido->fecha_retiro->isToday();
+                                $vencido = $pedido->fecha_retiro->isPast() && !$esHoy;
+                            @endphp
+                            <span class="badge {{ $esHoy ? 'badge-yellow' : ($vencido ? 'badge-red' : 'badge-green') }}"
+                                  style="font-size:0.85rem;">
+                                {{ $pedido->fecha_retiro_formateada }}
+                                @if($esHoy) &nbsp;⚠️ <strong>Hoy</strong>
+                                @elseif($vencido) &nbsp;🗑️ Vencido
+                                @endif
+                            </span>
+                        @else
+                            <span style="color:var(--gris);">Sin fecha asignada</span>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 0;color:var(--gris);font-size:0.85rem;">Fecha creación</td>
+                    <td>{{ $pedido->fecha_formateada }}</td>
+                </tr>
             </table>
 
             <hr style="border:none;border-top:1px solid rgba(42,74,30,0.08);margin:1.5rem 0;">
 
             <h4 style="color:var(--verde);margin-bottom:1rem;">👤 Datos del cliente</h4>
             <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;width:120px;">Nombre</td><td>{{ $pedido->nombre_cliente }}</td></tr>
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Teléfono</td>
-                    <td><a href="https://wa.me/506{{ $pedido->telefono_cliente }}" target="_blank" style="color:var(--verde);">📱 {{ $pedido->telefono_cliente }}</a></td></tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;width:140px;">Nombre</td>
+                    <td>{{ $pedido->nombre_cliente }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Teléfono</td>
+                    <td>
+                        <a href="https://wa.me/506{{ $pedido->telefono_cliente }}" target="_blank" style="color:var(--verde);">
+                            📱 {{ $pedido->telefono_cliente }}
+                        </a>
+                    </td>
+                </tr>
                 @if($pedido->email_cliente)
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Email</td><td style="word-break:break-all;">{{ $pedido->email_cliente }}</td></tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Email</td>
+                    <td style="word-break:break-all;">{{ $pedido->email_cliente }}</td>
+                </tr>
                 @endif
-                {{-- #9: accessor --}}
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Entrega</td>
-                    <td>{{ $pedido->es_envio ? '🚗 Domicilio' : '🏪 Retiro en local' }}</td></tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Tipo entrega</td>
+                    <td>{{ $pedido->es_envio ? '🚗 Domicilio' : '🏪 Retiro en local' }}</td>
+                </tr>
                 @if($pedido->direccion_envio)
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Dirección</td><td>{{ $pedido->direccion_envio }}</td></tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Dirección</td>
+                    <td>{{ $pedido->direccion_envio }}</td>
+                </tr>
                 @endif
                 @if($pedido->nota)
-                <tr><td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Nota</td><td style="font-style:italic;">{{ $pedido->nota }}</td></tr>
+                <tr>
+                    <td style="padding:6px 0;color:var(--gris);font-size:0.85rem;">Nota</td>
+                    <td style="font-style:italic;">{{ $pedido->nota }}</td>
+                </tr>
                 @endif
             </table>
 
@@ -52,7 +97,6 @@
 
             <h4 style="color:var(--verde);margin-bottom:1rem;">🛒 Productos</h4>
             <table style="width:100%;border-collapse:collapse;">
-                {{-- $pedido->items viene del accessor getItemsAttribute() --}}
                 @foreach($pedido->items as $item)
                 <tr style="border-bottom:1px solid rgba(42,74,30,0.06);">
                     <td style="padding:10px 0;">💐 {{ $item['nombre'] }}</td>
@@ -60,14 +104,21 @@
                     <td style="font-weight:500;text-align:right;">{{ formatPrice($item['precio'] * $item['cantidad']) }}</td>
                 </tr>
                 @endforeach
-                <tr><td colspan="2" style="padding:10px 0;color:var(--gris);">Subtotal</td><td style="text-align:right;">{{ formatPrice($pedido->subtotal) }}</td></tr>
+                <tr>
+                    <td colspan="2" style="padding:10px 0;color:var(--gris);">Subtotal</td>
+                    <td style="text-align:right;">{{ formatPrice($pedido->subtotal) }}</td>
+                </tr>
                 @if($pedido->costo_envio > 0)
-                <tr><td colspan="2" style="color:var(--gris);">Envío</td><td style="text-align:right;">{{ formatPrice($pedido->costo_envio) }}</td></tr>
+                <tr>
+                    <td colspan="2" style="color:var(--gris);">Envío</td>
+                    <td style="text-align:right;">{{ formatPrice($pedido->costo_envio) }}</td>
+                </tr>
                 @endif
                 <tr>
                     <td colspan="2" style="padding:10px 0;font-weight:600;color:var(--verde);">TOTAL</td>
-                    {{-- #9: accessor total_formateado --}}
-                    <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--verde);">{{ $pedido->total_formateado }}</td>
+                    <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--verde);">
+                        {{ $pedido->total_formateado }}
+                    </td>
                 </tr>
             </table>
         </div>
@@ -80,7 +131,6 @@
                 @csrf @method('PATCH')
                 <div class="form-group">
                     <select name="estado">
-                        {{-- #9: constante del modelo en lugar del array local --}}
                         @foreach(\App\Models\Pedido::ESTADOS as $val => $lbl)
                         <option value="{{ $val }}" {{ $pedido->estado === $val ? 'selected' : '' }}>{{ $lbl }}</option>
                         @endforeach

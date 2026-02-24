@@ -27,38 +27,27 @@ class NewsletterController extends Controller
         ]);
 
         $suscriptores = Suscriptor::where('activo', true)->get();
-        $enviados = 0;
-        $errores  = 0;
 
         foreach ($suscriptores as $sub) {
-            try {
-                Mail::to($sub->email)->send(
-                    new NewsletterMail(
-                        $request->input('asunto'),
-                        $request->input('mensaje'),
-                        $sub->nombre
-                    )
-                );
-                $enviados++;
-            } catch (\Exception $e) {
-                $errores++;
-            }
+            // FIX #7: Mail::queue en lugar de Mail::send
+            // No bloquea el request; el queue worker procesa en background
+            Mail::to($sub->email)->queue(
+                new NewsletterMail(
+                    $request->input('asunto'),
+                    $request->input('mensaje'),
+                    $sub->nombre
+                )
+            );
         }
 
-        // Guardar registro del newsletter enviado
         Newsletter::create([
             'asunto'     => $request->input('asunto'),
             'mensaje'    => $request->input('mensaje'),
-            'enviado_a'  => $enviados,
+            'enviado_a'  => $suscriptores->count(),
             'enviado_en' => now(),
         ]);
 
-        $msg = "✅ Newsletter enviado a {$enviados} suscriptores.";
-        if ($errores > 0) {
-            $msg .= " ⚠️ {$errores} no pudieron ser enviados.";
-        }
-
         return redirect()->route('admin.newsletter.index')
-            ->with('success', $msg);
+            ->with('success', "✅ Newsletter encolado para {$suscriptores->count()} suscriptores.");
     }
 }
