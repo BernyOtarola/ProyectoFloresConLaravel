@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
         DB::table('admins')->insertOrIgnore([
             'nombre'        => 'Fanny Alemán',
             'email'         => 'fannyaleman0312@gmail.com',
-            'password_hash' => Hash::make('FannyAdmin123'),
+            'password_hash' => Hash::make(env('ADMIN_DEFAULT_PASSWORD', 'cambiar-esto')),
             'creado_en'     => now(),
         ]);
     }

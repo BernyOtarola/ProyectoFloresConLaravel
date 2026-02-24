@@ -12,10 +12,7 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::with('categoria')
-            ->orderByDesc('destacado')
-            ->latest('creado_en')
-            ->get();
+        $productos = Producto::with('categoria')->orderByDesc('destacado')->latest('creado_en')->get();
 
         return view('admin.productos.index', compact('productos'));
     }

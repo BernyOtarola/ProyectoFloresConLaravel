@@ -34,7 +34,15 @@
         .sb-footer { padding:1.5rem;border-top:1px solid rgba(255,255,255,0.1); }
         .sb-user { font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem; }
         .sb-user strong { color:rgba(255,255,255,0.85);display:block; }
-        .btn-logout { display:block;width:100%;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;cursor:pointer;padding:9px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;text-align:center;text-decoration:none;transition:all 0.2s; }
+
+        /* Botón logout sidebar — ahora es submit de form POST */
+        .btn-logout {
+            display:block;width:100%;
+            background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);
+            border:none;cursor:pointer;padding:9px;border-radius:8px;
+            font-family:'DM Sans',sans-serif;font-size:0.85rem;text-align:center;
+            transition:all 0.2s;
+        }
         .btn-logout:hover { background:rgba(255,255,255,0.2);color:white; }
 
         /* Botón cerrar dentro del sidebar (solo móvil) */
@@ -190,16 +198,22 @@
         <a href="{{ route('admin.suscriptores.index') }}" class="sb-link {{ request()->routeIs('admin.suscriptores.*') ? 'active' : '' }}"><span>📧</span> Suscriptores</a>
         <a href="{{ route('admin.newsletter.index') }}"  class="sb-link {{ request()->routeIs('admin.newsletter.*') ? 'active' : '' }}"><span>📨</span> Newsletter</a>
         <div class="sb-section">Tienda</div>
-        <a href="{{ route('home') }}" class="sb-link"><span>🔗</span> Ver tienda</a>
+        <a href="{{ route('home') }}" target="_blank" class="sb-link"><span>🔗</span> Ver tienda</a>
     </nav>
 
-    {{-- ↓ Auth::guard('admin') en lugar de session('admin_nombre') --}}
     <div class="sb-footer">
         <div class="sb-user">
             Sesión como
             <strong>{{ Auth::guard('admin')->user()->nombre }}</strong>
         </div>
-        <a href="{{ route('logout.admin') }}" class="btn-logout">Cerrar sesión</a>
+
+        {{-- ✅ Logout POST — protegido contra CSRF logout --}}
+        <form method="POST" action="{{ route('logout.admin') }}">
+            @csrf
+            <button type="submit" class="btn-logout">
+                Cerrar sesión
+            </button>
+        </form>
     </div>
 </aside>
 

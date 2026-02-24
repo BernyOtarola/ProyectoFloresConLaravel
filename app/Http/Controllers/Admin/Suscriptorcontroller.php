@@ -27,9 +27,7 @@ class SuscriptorController extends Controller
 
     public function exportar()
     {
-        $suscriptores = Suscriptor::where('activo', true)
-            ->latest('suscrito_en')
-            ->get();
+        $suscriptores = Suscriptor::where('activo', true)->latest('suscrito_en')->get();
 
         $filename = 'suscriptores_bribri_' . now()->format('Y-m-d') . '.csv';
 

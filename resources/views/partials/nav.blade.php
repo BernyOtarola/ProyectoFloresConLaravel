@@ -31,10 +31,14 @@
            style="color:var(--rosa);text-decoration:none;font-weight:500;border:1px solid rgba(232,180,160,0.4);padding:4px 12px;border-radius:100px;transition:all 0.2s;">
             📊 Dashboard
         </a>
-        <a href="{{ route('logout.admin') }}"
-           style="color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.75rem;">
-            Cerrar sesión
-        </a>
+        {{-- Logout admin POST --}}
+        <form method="POST" action="{{ route('logout.admin') }}" style="display:inline;">
+            @csrf
+            <button type="submit"
+                style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;font-size:0.75rem;padding:0;">
+                Cerrar sesión
+            </button>
+        </form>
     </div>
 </div>
 
@@ -57,10 +61,14 @@
     <span style="color:var(--gris);">
         🌸 Hola, <strong style="color:var(--verde);">{{ $userNombre }}</strong>
     </span>
-    <a href="{{ route('logout') }}"
-       style="color:var(--terracota);text-decoration:none;font-size:0.75rem;">
-        Cerrar sesión
-    </a>
+    {{-- Logout cliente POST --}}
+    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+        @csrf
+        <button type="submit"
+            style="background:none;border:none;cursor:pointer;color:var(--terracota);font-family:'DM Sans',sans-serif;font-size:0.75rem;padding:0;">
+            Cerrar sesión
+        </button>
+    </form>
 </div>
 @endif
 
@@ -100,9 +108,12 @@
             <a href="{{ route('admin.dashboard') }}" class="nav-btn-admin">
                 ⚙️ Admin
             </a>
-            <a href="{{ route('logout.admin') }}" class="nav-btn-ghost">
-                Cerrar sesión
-            </a>
+            <form method="POST" action="{{ route('logout.admin') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="nav-btn-ghost">
+                    Cerrar sesión
+                </button>
+            </form>
 
         @elseif($userLogueado)
             {{-- ── CLIENTE logueado ── --}}
@@ -115,9 +126,12 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             ">👤 {{ $userNombre }}</span>
-            <a href="{{ route('logout') }}" class="nav-btn-ghost">
-                Cerrar sesión
-            </a>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="nav-btn-ghost">
+                    Cerrar sesión
+                </button>
+            </form>
 
         @else
             {{-- ── INVITADO ── --}}
