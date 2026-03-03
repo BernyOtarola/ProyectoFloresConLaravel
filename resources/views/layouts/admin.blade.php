@@ -198,7 +198,7 @@
         <a href="{{ route('admin.suscriptores.index') }}" class="sb-link {{ request()->routeIs('admin.suscriptores.*') ? 'active' : '' }}"><span>📧</span> Suscriptores</a>
         <a href="{{ route('admin.newsletter.index') }}"  class="sb-link {{ request()->routeIs('admin.newsletter.*') ? 'active' : '' }}"><span>📨</span> Newsletter</a>
         <div class="sb-section">Tienda</div>
-        <a href="{{ route('home') }}" target="_blank" class="sb-link"><span>🔗</span> Ver tienda</a>
+        <a href="{{ route('home') }}" class="sb-link"><span>🔗</span> Ver tienda</a>
     </nav>
 
     <div class="sb-footer">

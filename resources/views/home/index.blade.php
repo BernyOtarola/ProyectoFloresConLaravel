@@ -696,33 +696,6 @@
     </section>
 
     {{-- ═══ NEWSLETTER ═══ --}}
-    <div class="nl-box">
-        <h2>🌸 Suscribite a nuestras novedades</h2>
-        <p>Recibí ofertas exclusivas, tips florales y las últimas novedades de temporada.</p>
-
-        <form id="nlForm" style="display:block;">
-            <div style="display:flex;gap:1rem;max-width:520px;margin:0 auto;flex-wrap:wrap;">
-                <input
-                    type="text"
-                    id="nlNombre"
-                    placeholder="Tu nombre"
-                    style="flex:1;min-width:140px;padding:14px 20px;border-radius:100px;border:none;background:rgba(255,255,255,0.15);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;"
-                >
-                <input
-                    type="email"
-                    id="nlEmail"
-                    placeholder="Tu correo electrónico"
-                    style="flex:2;min-width:200px;padding:14px 20px;border-radius:100px;border:none;background:rgba(255,255,255,0.15);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;"
-                >
-                <button type="button" onclick="suscribir()"
-                    style="background:var(--terracota);color:white;border:none;cursor:pointer;padding:14px 28px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;transition:all 0.2s;white-space:nowrap;">
-                    Suscribirme 🌸
-                </button>
-            </div>
-        </form>
-
-        <p id="nlMsg" style="margin-top:1rem;color:rgba(255,255,255,0.9);font-size:0.95rem;display:none;"></p>
-    </div>
 
 @endsection
 

@@ -7,7 +7,6 @@
 .page-wrap > h1 { font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--verde);margin-bottom:2rem; }
 .cart-layout { display:grid;grid-template-columns:1fr 360px;gap:2.5rem; }
 
-/* ── Aviso de precios actualizados ─────────────────── */
 .alert-sync {
     background:#fff8e1;
     border:1px solid #ffe082;
@@ -30,20 +29,6 @@
 .item-name { font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--verde); }
 .item-price { font-size:0.85rem;color:var(--gris);margin-top:4px; }
 
-/* Badge de precio actualizado */
-.price-updated {
-    display:inline-block;
-    background:#fff3cd;
-    color:#856404;
-    font-size:0.7rem;
-    font-weight:500;
-    padding:2px 8px;
-    border-radius:100px;
-    margin-left:6px;
-    vertical-align:middle;
-    border:1px solid #ffe082;
-}
-
 .qty-row { display:flex;align-items:center;gap:10px;margin-top:10px; }
 .qty-btn { width:30px;height:30px;border-radius:50%;border:1.5px solid var(--verde);background:none;cursor:pointer;font-size:1rem;color:var(--verde);display:flex;align-items:center;justify-content:center;transition:all 0.2s; }
 .qty-btn:hover { background:var(--verde);color:white; }
@@ -65,7 +50,6 @@
 .btn-checkout:hover { background:var(--verde-claro);transform:translateY(-2px);box-shadow:0 8px 24px rgba(42,74,30,0.2); }
 .btn-seguir { display:block;text-align:center;color:var(--verde);font-size:0.875rem;margin-top:1rem;text-decoration:none; }
 
-/* Modal */
 .overlay { position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;display:none;align-items:center;justify-content:center;padding:1rem; }
 .overlay.open { display:flex; }
 .modal { background:white;border-radius:24px;padding:2.5rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto; }
@@ -108,17 +92,6 @@
     </div>
     @else
 
-    {{-- ── Aviso si algún precio o nombre fue actualizado ── --}}
-    @php
-        // Comparamos el carrito original (antes de sincronizar) con el actual.
-        // El controlador ya sincronizó y persistió, así que si session('carrito_sync_warning')
-        // fue seteado, mostramos el aviso. Lo usamos de forma diferente:
-        // detectamos diferencias pasando los datos originales desde el controlador.
-        // Como alternativa simple y efectiva, siempre mostramos el aviso
-        // con un mensaje genérico suave que no alarma pero informa.
-        // (Ver nota técnica abajo)
-    @endphp
-
     @if(session('carrito_sync_changed'))
         <div class="alert-sync">
             <span class="alert-icon">ℹ️</span>
@@ -128,7 +101,6 @@
                 Los montos que ves ahora son los <strong>precios vigentes</strong>.
             </div>
         </div>
-        {{-- Limpiar el flag después de mostrarlo --}}
         @php session()->forget('carrito_sync_changed'); @endphp
     @endif
 
@@ -241,24 +213,14 @@
 <script>
 let tipoEntrega = 'retiro';
 
-{{-- ── Datos desde PHP → JS, ya sincronizados desde BD ── --}}
-{{-- base y cartData usan los precios del carrito ya sincronizado --}}
 const base     = {{ $subtotal ?? 0 }};
 const envCosto = {{ config('floristeria.costo_envio') }};
 
-{{-- cartData lleva precios actualizados desde el servidor --}}
-const cartData = @json(array_values(array_map(function($item) {
-    return [
-        'id'       => $item['id'],
-        'nombre'   => $item['nombre'],
-        'precio'   => $item['precio'],
-        'cantidad' => $item['cantidad'],
-    ];
-}, $carrito ?? [])));
+{{-- ✅ FIX: cartData preparado en el controller, sin array_map en Blade --}}
+const cartData = @json($cartData);
 
 const csrfToken = '{{ csrf_token() }}';
 
-// Fecha mínima = hoy
 document.addEventListener('DOMContentLoaded', () => {
     const inputFecha = document.getElementById('cFechaRetiro');
     if (inputFecha) {
@@ -277,7 +239,6 @@ function setTipo(t) {
     document.getElementById('modalTotal').textContent = formatColones(tot);
 }
 
-// ── Cambiar cantidad ─────────────────────────────────
 function cambiar(id, delta) {
     const el = document.getElementById('qty-' + id);
     let q = parseInt(el.textContent) + delta;
@@ -292,23 +253,13 @@ function cambiar(id, delta) {
     .then(d => {
         if (d.success) {
             el.textContent = q;
-            // Actualizar subtotal del item con el precio que devuelve el servidor
-            // (puede haber cambiado si el admin lo actualizó)
-            const itemActualizado = d.item; // precio actualizado desde BD
-            if (itemActualizado) {
-                const precioActual = itemActualizado.precio;
-                document.getElementById('sub-' + id).textContent = formatColones(precioActual * q);
-            } else {
-                // fallback: usar precio local
-                const precio = cartData.find(i => i.id == id)?.precio || 0;
-                document.getElementById('sub-' + id).textContent = formatColones(precio * q);
-            }
+            const precio = cartData.find(i => i.id == id)?.precio || 0;
+            document.getElementById('sub-' + id).textContent = formatColones(precio * q);
             actualizarTotales(d.total);
         }
     });
 }
 
-// ── Eliminar item ────────────────────────────────────
 function eliminar(id) {
     fetch('{{ route("api.carrito") }}', {
         method: 'POST',
@@ -323,19 +274,16 @@ function eliminar(id) {
     });
 }
 
-// ── Actualizar totales en UI ─────────────────────────
 function actualizarTotales(total) {
     const f = formatColones(total);
     document.getElementById('sSubtotal').textContent = f;
     document.getElementById('sTotal').textContent    = f;
 }
 
-// ── Formatear colones ────────────────────────────────
 function formatColones(num) {
     return '₡' + Math.round(num).toLocaleString('es-CR');
 }
 
-// ── Enviar pedido por WhatsApp ───────────────────────
 function enviarPedido() {
     const nombre      = document.getElementById('cNombre').value.trim();
     const tel         = document.getElementById('cTel').value.trim();
@@ -356,7 +304,6 @@ function enviarPedido() {
         direccion:    dir,
         tipo:         tipoEntrega,
         fecha_retiro: fechaRetiro,
-        // cartData ya tiene precios sincronizados desde BD (renderizados por PHP)
         carrito:      cartData,
         subtotal:     base,
         envio:        tipoEntrega === 'envio' ? envCosto : 0,
@@ -370,13 +317,11 @@ function enviarPedido() {
     })
     .then(r => r.json())
     .then(data => {
-
         if (!data.success) {
             alert(data.message || 'Error al procesar el pedido.');
             return;
         }
 
-        // Fecha legible
         const fechaObj   = new Date(fechaRetiro + 'T12:00:00');
         const fechaTexto = fechaObj.toLocaleDateString('es-CR', {
             weekday: 'long', day: 'numeric', month: 'long'
@@ -404,7 +349,6 @@ function enviarPedido() {
             '_blank'
         );
 
-        // Limpiar carrito en sesión
         fetch('{{ route("api.carrito") }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
@@ -418,7 +362,6 @@ function enviarPedido() {
     });
 }
 
-// Cerrar modal al click fuera
 document.getElementById('checkoutOverlay')?.addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });
